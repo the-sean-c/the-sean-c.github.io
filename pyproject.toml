@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "the-sean-c-github-io"
+version = "0.1.0"
+description = "Github Pages Website"
+authors = ["Sean Daly"]
+readme = "README.md"
+packages = [{include = "the_sean_c"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
