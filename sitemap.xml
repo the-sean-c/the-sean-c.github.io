@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.seancdaly.com/about.html</loc>
-    <lastmod>2023-08-07T06:35:49.445Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.seancdaly.com/posts/welcome/index.html</loc>
-    <lastmod>2023-08-07T06:35:48.898Z</lastmod>
-  </url>
-  <url>
-    <loc>https://www.seancdaly.com/posts/post-with-code/index.html</loc>
-    <lastmod>2023-08-07T06:35:48.676Z</lastmod>
+    <loc>https://www.seancdaly.com/about copy.html</loc>
+    <lastmod>2023-08-07T06:37:14.638Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/index.html</loc>
-    <lastmod>2023-08-07T06:35:49.206Z</lastmod>
+    <lastmod>2023-08-07T06:37:14.217Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.seancdaly.com/posts/post-with-code/index.html</loc>
+    <lastmod>2023-08-07T06:37:13.693Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.seancdaly.com/posts/welcome/index.html</loc>
+    <lastmod>2023-08-07T06:37:13.911Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.seancdaly.com/about.html</loc>
+    <lastmod>2023-08-07T06:37:14.434Z</lastmod>
   </url>
 </urlset>
