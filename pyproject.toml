@@ -8,6 +8,12 @@ packages = [{include = "the_sean_c"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+numpy = "^1.25.2"
+polars = "^0.18.15"
+plotly = "^5.16.1"
+pandas = "^2.0.3"
+jupyter = "^1.0.0"
+jupyterlab = "^4.0.5"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"

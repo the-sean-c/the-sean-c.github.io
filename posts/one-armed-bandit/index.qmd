@@ -1,0 +1,166 @@
+---
+title: "Decisions in Bandit Country"
+author: "Harlow Malloc"
+date: "2023-08-03"
+categories: []
+image: "one-armed-bandits.png"
+draft: true
+---
+
+
+```{python}
+#  | include: false
+import numpy as np
+import polars as pl
+import plotly.express as px
+import plotly.graph_objects as go
+from utilities.plot_template import the_template
+
+```
+
+![](one-armed-bandits.png){width=75% fig-align="centre"}
+
+Decisions decisions.. which restaurant to eat at, what activity to plan for a date, what brand of shoes to buy, which marketing plan to follow, how do we make it so we generally make the right choice?
+
+The idea that we can go out into the world and do things and learn from our mistakes underpins the field of reinforcement learning, which attempts to do exactly that. Below, I'm going to demonstrate the "multi-armed bandit" model as a model to show some of the insights into decision making that reinforcement learning can give us.
+
+Like a lot of models, there's a lot of simplifying assumptions that go into the setup, and it's probably too simple (and inefficient) to really use it in practice. But, it is still worth examining it as the simplicity of the model makes it easier to glean some nice lessons about how to act in the world.
+
+For a more detailed exploration of the topic, I highly recommend the foundational Reinforcement Learning: An Introduction by Sutton and Barto.
+
+## Multi-Armed Bandits
+
+To bring the model squarely into the realm of probabilities, so that we can make nice mathematical models and bring in a sense of rewards, we will look at one-armed bandits. A one-armed bandit is another name for a slot machine. The name comes from the older mechanical models that had an arm on the side to make the machine work, and over the long run they will take all your money. We will look at the situation where there are 3 machines - we will have to decide which machine to play and update our decision as time progresses.
+
+I will be modelling the returns to a player by playing the game as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample sample points. As you can see, there are far more rewards below the mean than above it, but the big rewards are pretty big. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
+
+```{python}
+#| label: fig-exponential_distribution_pdf
+#| echo: false
+#| fig-cap: "Exponential Distribution"
+#| fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
+
+# Parameters
+mean = 0.95
+lambda_param = 1.0 / mean
+x = np.linspace(0, 6, 400)  # Generate x values
+y = lambda_param * np.exp(-lambda_param * x)  # Exponential distribution function
+
+# Sample 50 points and jitter for dodging
+sample_points_x = np.random.exponential(mean, 50)
+jitter = 0.05  # Adjust this value for more/less jitter
+sample_points_y = [np.random.uniform(-jitter, jitter) for _ in range(50)]
+
+# Plot using Plotly
+fig = go.Figure()
+
+# Add the curve
+fig.add_trace(go.Scatter(x=x, y=y, mode="lines", name="exponential_distribution"))
+
+# Add the sample points along the x-axis with jitter
+fig.add_trace(
+    go.Scatter(
+        x=sample_points_x, y=sample_points_y, mode="markers", name="sample_points"
+    )
+)
+
+# Add line at the mean
+fig.add_shape(
+    go.layout.Shape(
+        type="line",
+        x0=mean,
+        x1=mean,
+        y0=0,
+        y1=lambda_param * np.exp(-lambda_param * mean),
+        line=dict(color="Red", width=2),
+    )
+)
+
+# Add arrow annotation pointing to the mean
+fig.add_annotation(
+    x=mean,
+    y=lambda_param
+    * np.exp(-lambda_param * mean)
+    / 2,  # Place the arrow halfway along the mean line
+    text="expected mean",
+    showarrow=True,
+    arrowhead=4,
+    arrowsize=1,
+    arrowwidth=2,
+    arrowcolor="Red",
+    ax=80,
+    ay=-80,
+)
+
+# Layout
+fig.update_layout(
+    xaxis_title="Reward ($)",
+    yaxis_title="Probability Density",
+    yaxis=dict(showgrid=False, ticklen=5, tickwidth=1),
+    xaxis=dict(showgrid=False, ticklen=5, tickwidth=1),
+    template=the_template,
+)
+
+fig.show()
+
+```
+
+Machines with an identical distribution of random rewards are not interesting though. Why? Well, there's no "good" machine to pick. Whether you pick one machine or hop around, you would have the same expected reward.
+
+We are interested in the cases where playing different machines has different expected outcomes. In this case, we want to have a systematic approach to deciding which machine to play to maximize our rewards. This maps back to other decisions we might make in our day-to-day lives, such as choosing a restaurant. The meals you get at a restaurant would probably have a less variability than my model here, but despite on-days and off-days, some restaurants are just better on average.
+
+```{python}
+n_machines = 3
+n_periods = 500
+
+sigma = 0.1
+cost_per_game = 1
+expected_prize = 0.95
+starting_value = 100
+
+mean_lin = np.ones(n_machines) * expected_prize
+var_lin = np.ones(n_machines) * (sigma**2)
+
+mean_log = np.log(mean_lin**2 / (np.sqrt(mean_lin**2 + var_lin)))
+var_log = np.log(1 + var_lin / mean_lin**2)
+cov_log = np.diag(var_log)
+```
+
+
+```{python}
+rng = np.random.default_rng(2)
+e_reward_c = np.exp(rng.multivariate_normal(mean_log, cov_log, size=(1))[0])
+e_reward_c = np.tile(e_reward_c, (n_periods, 1))
+reward_c = np.random.exponential(e_reward_c)
+
+machine_labels = [str(i + 1) for i in range(reward_c.shape[1])]
+
+rewards_df = (
+    pl.DataFrame({"turn": pl.Series(values=range(1, reward_c.shape[0] + 1))})
+    .with_columns(pl.from_numpy(reward_c, schema=machine_labels, orient="row"))
+    .melt(
+        id_vars="turn",
+        value_vars=machine_labels,
+        value_name="reward",
+        variable_name="machine",
+    )
+).with_columns(
+    (
+        pl.DataFrame(
+            {"turn": pl.Series(values=range(1, reward_c.shape[0] + 1))}
+        ).with_columns(pl.from_numpy(e_reward_c, schema=machine_labels, orient="row"))
+    ).melt(
+        id_vars="turn",
+        value_vars=machine_labels,
+        value_name="expected_reward",
+        variable_name="machine",
+    )
+)
+
+fig = px.scatter(
+    rewards_df, x="turn", y="reward", color="machine", template=the_template
+)
+
+fig.show()
+
+```

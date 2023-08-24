@@ -1,15 +1,16 @@
 project:
   type: website
+  execute-dir: project
 
 website:
   title: "Sean Daly"
   navbar:
     right:
       - about.qmd
+      - icon: linkedin
+        href: https://www.linkedin.com/in/seancdaly/
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/the-sean-c
 format:
   html:
     theme: cosmo
