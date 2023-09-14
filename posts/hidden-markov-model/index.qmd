@@ -1,0 +1,16 @@
+---
+title: "Finding Markov"
+subtitle: "Fitting Hidden Markov Models" 
+author: "Harlow Malloc"
+date: "2023-08-03"
+categories: []
+image: "man-and-chart.jpeg"
+draft: true
+toc: true
+---
+
+![](man-and-chart.jpeg){fig-align="center"}
+
+
+
+## 
