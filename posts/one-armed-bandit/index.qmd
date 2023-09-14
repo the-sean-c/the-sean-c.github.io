@@ -44,7 +44,7 @@ This type of decision can be seen in many real world situations, e.g. picking a 
 
 ## Multi-Armed Bandits
 
-Using a gambling machine allows us to bring this model squarely into the realm of probabilities, and it adds a natural system of rewards. So say, for example, you walk into a casino and start playing 3 machines. You go from one to the other over the course of 6 turns and get the following prizes. 
+Using a gambling machine allows us to bring this model squarely into the realm of probabilities, and it adds a natural system of rewards, i.e. prizes. So say, for example, you walk into a casino and start playing 3 machines. You go from one to the other over the course of 6 turns and get the following prizes. 
 
 What do you do next?
 ```{python}
@@ -134,12 +134,12 @@ d = dict(selector="th",
 
 ```
 
-I will be modelling the returns to a player by playing the game as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample sample points. As you can see, there are far more rewards below the mean than above it, but the big rewards are pretty big. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
+I will be modelling the prizes won by a player as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample rewards. As you can see, there are far more rewards below the mean than above it, but the big rewards are much bigger. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
 
 ```{python}
 # | label: fig-exponential_distribution_pdf
 # | echo: false
-# | fig-cap: "Exponential Distribution"
+# | fig-cap: "Example of an Exponential Distribution"
 # | fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
 
 # Parameters
@@ -176,12 +176,9 @@ plt.show()
 
 ```
 
-Machines with an identical distribution of random rewards are not interesting though. Why? Well, there's no "good" machine to pick. Whether you pick one machine or hop around, you would have the same expected reward.
+Machines with an identical distribution of random prizes are not interesting though. Why? Well, there's no "good" machine to pick. Whether you pick one machine or hop around, you would have the same expected prize. The actual prize you win will vary through random chance which is not predictable.
 
-We are interested in the cases where playing different machines has different expected outcomes. In this case, we want to have a systematic approach to deciding which machine to play to maximize our rewards. This maps back to other decisions we might make in our day-to-day lives, such as choosing a restaurant. The meals you get at a restaurant would probably have a less variability than my model here, but despite on-days and off-days, some restaurants are just better on average.
-
-
-
+Instead, we are interested in the cases where playing different machines has different expected outcomes. In this case, we want to have a systematic approach to deciding which machine to play to maximize our rewards. This maps back to other decisions we might make in our day-to-day lives, such as choosing a restaurant. The meals you get at a restaurant would probably have a less variability than my model here, but despite on-days and off-days, some restaurants are just better on average.
 
 
 

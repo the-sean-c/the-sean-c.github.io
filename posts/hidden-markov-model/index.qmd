@@ -11,6 +11,7 @@ toc: true
 
 ![](man-and-chart.jpeg){fig-align="center"}
 
-
+Sometimes one model of the world won't do. 
 
 ## 
+
