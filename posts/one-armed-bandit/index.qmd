@@ -55,7 +55,7 @@ n_periods = 800
 
 sigma = 0.2
 cost_per_game = 1
-expected_prize = 0.95
+expected_prize = 0.99
 starting_value = 100
 
 mean_lin = np.ones(n_machines) * expected_prize
@@ -91,7 +91,7 @@ rewards_df["turn"] = list(range(1, rewards.shape[0] + 1))
 rewards_df = rewards_df.melt(
     id_vars="turn",
     value_vars=machine_labels,
-    value_name="reward",
+    value_name="prize",
     var_name="machine",)
 
 e_rewards_df = pd.DataFrame(e_rewards)
@@ -100,7 +100,7 @@ e_rewards_df["turn"] = list(range(1, e_rewards.shape[0] + 1))
 e_rewards_df = e_rewards_df.melt(
     id_vars="turn",
     value_vars=machine_labels,
-    value_name="expected_reward",
+    value_name="expected_prize",
     var_name="machine",)
 
 rewards_df = rewards_df.merge(e_rewards_df, on=("turn", "machine"), how="left")
@@ -143,7 +143,7 @@ I will be modelling the prizes won by a player as an exponential distribution. T
 # | fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
 
 # Parameters
-mean = 0.95
+mean = 0.99
 lambda_param = 1.0 / mean
 x = np.linspace(0, 6, 400)  # Generate x values
 y = lambda_param * np.exp(-lambda_param * x)  # Exponential distribution function
@@ -180,7 +180,7 @@ Machines with an identical distribution of random prizes are not interesting tho
 
 Instead, we are interested in the cases where playing different machines has different expected outcomes. In this case, we want to have a systematic approach to deciding which machine to play to maximize our rewards. This maps back to other decisions we might make in our day-to-day lives, such as choosing a restaurant. The meals you get at a restaurant would probably have a less variability than my model here, but despite on-days and off-days, some restaurants are just better on average.
 
-
+Creating a random walk with mean recursion for each of the three machines looks like this (noting that these are *expected* prizes, not actual prizes):
 
 ```{python}
 # | label: fig-expected_reward
@@ -188,18 +188,18 @@ Instead, we are interested in the cases where playing different machines has dif
 # | fig-cap: "Expected Rewards for each of 3 Machines"
 # | fig-alt: "A line-plot of the expected rewards to each of 3 machines."
 
-fig = px.line(
-    rewards_df, x="turn", y="expected_reward", color="machine", template=the_template
-)
-fig.update_layout(
-    xaxis_title="turn",
-    yaxis_title="expected reward ($)",
-    yaxis=dict(showgrid=True, ticklen=5, tickwidth=1),
-    xaxis=dict(showgrid=False, ticklen=5, tickwidth=1),
-)
-fig.show()
+ax = sns.lineplot(data=rewards_df, x="turn", y="expected_prize", hue="machine")
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
 ```
 
+The actual prizes you would win if you played all the machines at the same time would look as follows:
 
 ```{python}
 # | label: fig-reward
@@ -207,26 +207,73 @@ fig.show()
 # | fig-cap: "Actual Rewards for each of 3 Machines"
 # | fig-alt: "A scatter plot of the rewards to each of 3 machines."
 
-fig = px.scatter(
-    rewards_df,
-    x="turn",
-    y="reward",
-    color="machine",
-    template=the_template,
-)
-# Layout
-fig.update_layout(
-    xaxis_title="turn",
-    yaxis_title="reward ($)",
-    yaxis=dict(showgrid=True, ticklen=5, tickwidth=1, ticks="outside"),
-    xaxis=dict(
-        showgrid=False, ticklen=5, tickwidth=1, zeroline=False, range=[0, n_periods]
-    ),
-)
-fig.show()
+ax = sns.scatterplot(data=rewards_df, x="turn", y="prize", hue="machine", size=3)
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
 
-#
-#
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
 ```
+
+### The Oracle Strategy
+
+We can also plot what we call the "oracle", which is a model with perfect information, i.e. it knows which machine is the best to play on each turn. The expected return to the oracle looks like this:
+
+```{python}
+# | label: fig-expected_reward_oracle
+# | echo: false
+# | fig-cap: "Expected Prizes under the Oracle Strategy"
+# | fig-alt: "A scatter plot of the prizes won by the Oracle Strategy."
+
+oracle_e_rewards = np.max(e_rewards, axis=1)
+turns = list(range(1, len(oracle_e_rewards)+1))
+
+ax = sns.lineplot(data=rewards_df, x="turn", y="expected_prize", hue="machine", alpha=0.3)
+sns.lineplot(x=turns, y=oracle_e_rewards, color=palette[4], label="oracle")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+```
+
+We can track how successful the oracle strategy was over time by taking the running average of the prizes it won throughout the game:
+
+```{python}
+# | label: fig-average_reward_oracle
+# | echo: false
+# | fig-cap: "Running Average of Prizes won by Oracle Strategy"
+# | fig-alt: "Running Average of Prizes won by Oracle Strategy."
+
+oracle_choice = np.argmax(e_rewards, axis=1)
+oracle_rewards = np.take_along_axis(rewards, oracle_choice[:,None], axis=1)[:, 0]
+turns = np.array(list(range(1, len(oracle_rewards)+1)))
+average_oracle_rewards = np.cumsum(oracle_rewards) / turns
+
+sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+```
+
+That's not astonishing - even a strategy with perfect information is only barely coming out ahead - remember that each game costs $1 to play!
+
+## The Random Strategy
+
 
 For a more detailed exploration of the topic, I highly recommend the foundational Reinforcement Learning: An Introduction by Sutton and Barto.
