@@ -6,6 +6,9 @@ categories: []
 image: "one-armed-bandits.png"
 draft: true
 toc: true
+format:
+    html:
+        code-fold: true
 ---
 
 
@@ -23,9 +26,9 @@ from utilities.plot_template import the_template
 
 ![](man-machines.jpeg){fig-align="center"}
 
-Decisions are hard. We can't see how things will turn out, and we never have all the information we need to make the best decision right now. However, I believe there are systematic ways to approach many of the types of decisions we make in life.
+Decisions are hard. We can't see how things will turn out, and we never have all the information we need to make the best decision right now. However, there are systematic ways to work through the choices we make to give us a better chance of coming out on top.
 
-One way to view things is through the lens of reinforcement learning. This is a framework for decision making that assumes there is some environment out there to act on, and whatever we decide to do, the environment gives us some feedback. We might get a reward or punishment, or end up in a new state (one we expected or not), and through these interactions, we try to come up with a better decision making rule.
+One way to view things is through the lens of reinforcement learning. This is a framework for decision making that assumes there is some environment out there to act on, and whatever we decide to do the environment gives us some feedback in the form of a reward or a punishment. Through these interactions, we can learn a better decision making rule.
 
 There is a little more to the framework, such as the idea of a "state" that can impact the results of our actions. But, we will ignore that for now for the classic model I will talk about below: the multi-armed bandit. This model has the following features:
 
@@ -47,80 +50,16 @@ This type of decision can be seen in many real world situations, e.g. picking a 
 Using a gambling machine allows us to bring this model squarely into the realm of probabilities, and it adds a natural system of rewards, i.e. prizes. So say, for example, you walk into a casino and start playing 3 machines. You go from one to the other over the course of 6 turns and get the following prizes. 
 
 What do you do next?
-```{python}
-#| echo: false
-
-n_machines = 3
-n_periods = 800
-
-sigma = 0.2
-cost_per_game = 1
-expected_prize = 0.99
-starting_value = 100
-
-mean_lin = np.ones(n_machines) * expected_prize
-var_lin = np.ones(n_machines) * (sigma**2)
-
-mean_log = np.log(mean_lin**2 / (np.sqrt(mean_lin**2 + var_lin)))
-var_log = np.log(1 + var_lin / mean_lin**2) 
-cov_log = np.diag(var_log)
-```
 
 ```{python}
-# | echo: false
-# Mean-reverting process
-rng = np.random.default_rng(14)
-noise_log = rng.multivariate_normal(np.zeros(n_machines), cov_log, size=(n_periods + 200))
-
-e_rewards_log = np.ones_like(noise_log) * mean_log
-theta = 0.01
-for i in range(1, n_periods + 200):
-    e_rewards_log[i, :] = e_rewards_log[i - 1, :] + (
-        0.01 * (mean_log - e_rewards_log[i - 1, :]) + 0.15 * noise_log[i, :]
-        )
-e_rewards = np.exp(e_rewards_log[200:])
-
-# Generate rewards from expected rewards
-rewards = rng.exponential(e_rewards)
-
-machine_labels = [str(i + 1) for i in range(rewards.shape[1])]
-
-rewards_df = pd.DataFrame(rewards)
-rewards_df.columns = machine_labels
-rewards_df["turn"] = list(range(1, rewards.shape[0] + 1))
-rewards_df = rewards_df.melt(
-    id_vars="turn",
-    value_vars=machine_labels,
-    value_name="prize",
-    var_name="machine",)
-
-e_rewards_df = pd.DataFrame(e_rewards)
-e_rewards_df.columns = machine_labels
-e_rewards_df["turn"] = list(range(1, e_rewards.shape[0] + 1))
-e_rewards_df = e_rewards_df.melt(
-    id_vars="turn",
-    value_vars=machine_labels,
-    value_name="expected_prize",
-    var_name="machine",)
-
-rewards_df = rewards_df.merge(e_rewards_df, on=("turn", "machine"), how="left")
-```
-
-```{python}
-#| echo: false
 #| label: tbl-6_turns
 #| tbl-cap: Results from 6 Turns
-# Get the number of rows
-num_rows = 6
-# Randomly select an entry from each row
-indices = [0, 1, 2, 0, 1, 2]
-sample_rewards = rewards[np.arange(num_rows), indices]
 
 df = pd.DataFrame(
     {
-        "turn": list(range(1, num_rows + 1)),
-        "machine_id": indices,
-        "prize": sample_rewards,
+        "turn": [1, 2, 3, 4, 5, 6],
+        "machine_id": [1, 2, 3, 1, 2, 3],
+        "prize": [0.10, 1.32, 0.29, 1.18, 1.10, 0.17]
     }
 )
 
@@ -138,11 +77,11 @@ I will be modelling the prizes won by a player as an exponential distribution. T
 
 ```{python}
 # | label: fig-exponential_distribution_pdf
-# | echo: false
 # | fig-cap: "Example of an Exponential Distribution"
 # | fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
 
 # Parameters
+rng = np.random.default_rng(5)
 mean = 0.99
 lambda_param = 1.0 / mean
 x = np.linspace(0, 6, 400)  # Generate x values
@@ -173,7 +112,6 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.xlabel('prize')
 plt.ylabel('probability density function')
 plt.show()
-
 ```
 
 Machines with an identical distribution of random prizes are not interesting though. Why? Well, there's no "good" machine to pick. Whether you pick one machine or hop around, you would have the same expected prize. The actual prize you win will vary through random chance which is not predictable.
@@ -184,15 +122,70 @@ Creating a random walk with mean recursion for each of the three machines looks 
 
 ```{python}
 # | label: fig-expected_reward
-# | echo: false
 # | fig-cap: "Expected Rewards for each of 3 Machines"
 # | fig-alt: "A line-plot of the expected rewards to each of 3 machines."
 
+n_iterations = 1000
+n_machines = 3
+n_turns = 1000
+
+sigma = 0.2
+cost_per_game = 1
+expected_prize = 0.99
+starting_value = 100
+
+rng = np.random.default_rng(5)
+
+mean_lin = np.ones(n_machines) * expected_prize
+var_lin = np.ones(n_machines) * (sigma**2)
+
+mean_log = np.log(mean_lin**2 / (np.sqrt(mean_lin**2 + var_lin)))
+var_log = np.log(1 + var_lin / mean_lin**2) 
+cov_log = np.diag(var_log)
+
+# Mean-reverting process
+noise_log = rng.multivariate_normal(np.zeros(n_machines), cov_log, size=(n_iterations, n_turns + 200))
+
+e_rewards_log = np.ones_like(noise_log) * mean_log
+theta = 0.01
+for i in range(1, n_turns + 200):
+    e_rewards_log[:, i, :] = e_rewards_log[:, i - 1, :] + (
+        0.01 * (mean_log - e_rewards_log[:, i - 1, :]) + 0.15 * noise_log[:, i, :]
+        )
+e_rewards = np.exp(e_rewards_log[:, 200:])
+
+# Generate rewards from expected rewards
+rewards = rng.exponential(e_rewards)
+
+machine_labels = [str(i + 1) for i in range(rewards.shape[2])]
+
+rewards_df = pd.DataFrame(rewards[0, :, :])
+rewards_df.columns = machine_labels
+rewards_df["turn"] = list(range(1, rewards.shape[1] + 1))
+rewards_df = rewards_df.melt(
+    id_vars="turn",
+    value_vars=machine_labels,
+    value_name="prize",
+    var_name="machine",)
+
+e_rewards_df = pd.DataFrame(e_rewards[0, ::])
+e_rewards_df.columns = machine_labels
+e_rewards_df["turn"] = list(range(1, e_rewards.shape[1] + 1))
+e_rewards_df = e_rewards_df.melt(
+    id_vars="turn",
+    value_vars=machine_labels,
+    value_name="expected_prize",
+    var_name="machine",)
+
+rewards_df = rewards_df.merge(e_rewards_df, on=("turn", "machine"), how="left")
+
+# Plot
 ax = sns.lineplot(data=rewards_df, x="turn", y="expected_prize", hue="machine")
 plt.grid(axis='y', color='#E5E5E5')
 sns.despine(left=True, bottom=True, top=True, right=True)
 plt.tick_params(axis='x', which='both', bottom=True, left=True)
 plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.ylim(0.6, 1.8)
 
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
@@ -203,15 +196,15 @@ The actual prizes you would win if you played all the machines at the same time 
 
 ```{python}
 # | label: fig-reward
-# | echo: false
 # | fig-cap: "Actual Rewards for each of 3 Machines"
 # | fig-alt: "A scatter plot of the rewards to each of 3 machines."
 
-ax = sns.scatterplot(data=rewards_df, x="turn", y="prize", hue="machine", size=3)
+ax = sns.scatterplot(data=rewards_df, x="turn", y="prize", hue="machine", s=7)
 plt.grid(axis='y', color='#E5E5E5')
 sns.despine(left=True, bottom=True, top=True, right=True)
 plt.tick_params(axis='x', which='both', bottom=True, left=True)
 plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.ylim(0.0, 11)
 
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
@@ -224,11 +217,10 @@ We can also plot what we call the "oracle", which is a model with perfect inform
 
 ```{python}
 # | label: fig-expected_reward_oracle
-# | echo: false
 # | fig-cap: "Expected Prizes under the Oracle Strategy"
 # | fig-alt: "A scatter plot of the prizes won by the Oracle Strategy."
 
-oracle_e_rewards = np.max(e_rewards, axis=1)
+oracle_e_rewards = np.max(e_rewards[0], axis=1)
 turns = list(range(1, len(oracle_e_rewards)+1))
 
 ax = sns.lineplot(data=rewards_df, x="turn", y="expected_prize", hue="machine", alpha=0.3)
@@ -239,6 +231,7 @@ sns.despine(left=True, bottom=True, top=True, right=True)
 plt.tick_params(axis='x', which='both', bottom=True, left=True)
 plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
 plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0.6, 1.8)
 
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
@@ -247,33 +240,52 @@ plt.show()
 
 We can track how successful the oracle strategy was over time by taking the running average of the prizes it won throughout the game:
 
-```{python}
-# | label: fig-average_reward_oracle
-# | echo: false
-# | fig-cap: "Running Average of Prizes won by Oracle Strategy"
-# | fig-alt: "Running Average of Prizes won by Oracle Strategy."
+That's not astonishing - even a strategy with perfect information is only barely coming out ahead - remember that each game costs $1 to play!
 
-oracle_choice = np.argmax(e_rewards, axis=1)
-oracle_rewards = np.take_along_axis(rewards, oracle_choice[:,None], axis=1)[:, 0]
-turns = np.array(list(range(1, len(oracle_rewards)+1)))
-average_oracle_rewards = np.cumsum(oracle_rewards) / turns
+## The Random Strategy
+
+Another strategy we could use is to pick a machine to play at random in each round. 
+
+```{python}
+# | label: fig-average_reward_random
+# | fig-cap: "Running Average of Prizes won by Random Strategy "
+# | fig-alt: "Running Average of Prizes won by Random Strategy."
+
+oracle_choice = np.argmax(e_rewards, axis=2, keepdims=True)
+oracle_rewards = np.take_along_axis(rewards, oracle_choice, axis=2)
+oracle_rewards = np.squeeze(oracle_rewards)
+
+turns = np.array(list(range(1, n_turns+1)))
+average_oracle_rewards = np.cumsum(oracle_rewards, axis=1) / turns
+average_oracle_rewards = np.mean(average_oracle_rewards, axis=0)
+
+random_choice = rng.integers(0, n_machines, (n_iterations, n_turns))
+random_choice = np.expand_dims(random_choice, 2)
+random_rewards = np.take_along_axis(rewards, random_choice, axis=2)
+random_rewards = np.squeeze(random_rewards)
+
+turns = np.array(list(range(1, random_rewards.shape[1]+1)))
+average_random_rewards = np.cumsum(random_rewards, axis=1) / turns
+average_random_rewards = np.mean(average_random_rewards, axis=0)
+# print(average_random_rewards.shape)
 
 sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
 
 plt.grid(axis='y', color='#E5E5E5')
 sns.despine(left=True, bottom=True, top=True, right=True)
 plt.tick_params(axis='x', which='both', bottom=True, left=True)
 plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
-plt.tight_layout(rect=[0, 0, 1, 1])
+plt.tight_layout(rect=[0, 0, 0.98, 1])
+plt.ylim(0.6, 1.8)
+plt.xlabel("turn")
+plt.ylabel("average_prize")
 
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 ```
 
-That's not astonishing - even a strategy with perfect information is only barely coming out ahead - remember that each game costs $1 to play!
-
-## The Random Strategy
 
 
 For a more detailed exploration of the topic, I highly recommend the foundational Reinforcement Learning: An Introduction by Sutton and Barto.
