@@ -1,18 +1,20 @@
----
-title: "Decision-Making - Beating the Bandits"
-author: "Harlow Malloc"
-date: "2023-08-03"
-categories: []
-image: "one-armed-bandits.png"
-draft: true
-toc: true
-format:
-    html:
-        code-fold: true
----
-
-
-```{python}
+# type: ignore
+# flake8: noqa
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #  | include: false
 import numpy as np
 import pandas as pd
@@ -22,36 +24,36 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
 from utilities.plot_template import the_template
-```
-
-![](man-machines.jpeg){fig-align="center"}
-
-Decisions are hard. We can't see how things will turn out, and we never have all the information we need to make the best decision right now. However, there are systematic ways to work through the choices we make to give us a better chance of coming out on top.
-
-One way to view things is through the lens of reinforcement learning. This is a framework for decision making that assumes there is some environment out there to act on, and whatever we decide to do the environment gives us some feedback in the form of a reward or a punishment. Through these interactions, we can learn a better decision making rule.
-
-There is a little more to the framework, such as the idea of a "state" that can impact the results of our actions. But, we will ignore that for now for the classic model I will talk about below: the multi-armed bandit. This model has the following features:
-
-- We are in a casino with slot machines (one-armed bandits[^1]).
-- There are many machines to choose from.
-- Expected reward can change over time.
-- The reward on a given play is randomly scattered around the expected value.
-
-    [^1]: The name comes from the fact that older mechanical slot machines had an arm on the side to make the machine work, and over the long run they will take all your money.
-
-This type of decision can be seen in many real world situations, e.g. picking a restaurant, elements of a marketing campaign, or a vendor. This type of decision is also nice because it's relatively simple and it demonstrates some really nice elements of a decision-making strategy, which are the main takeaways from this blog:
-
-> - **Exploration v. Exploitation**: a really key concept to grasp. Do you explore new restaurants every weekend like an epicurean nomad, or do you decide you've found one that's good enough (exploiting what you already know)? Spoiler: you try to balance both.
-> - **Bias Towards Recency**: Things change all the time - you should change with them.
-> - **Optimistic Initial Expectations**: Believe it or not, until you know any better you're better off assuming the best.
-
-## Multi-Armed Bandits
-
-Using a gambling machine allows us to bring this model squarely into the realm of probabilities, and it adds a natural system of rewards, i.e. prizes. So say, for example, you walk into a casino and start playing 3 machines. You go from one to the other over the course of 6 turns and get the following prizes. 
-
-What do you do next?
-
-```{python}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #| label: tbl-6_turns
 #| tbl-cap: Results from 6 Turns
 
@@ -71,11 +73,11 @@ d = dict(selector="th",
     .set_properties(**{'width':'10em', 'text-align':'center'})
     .set_table_styles([d]))
 
-```
-
-I will be modelling the prizes won by a player as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample rewards. As you can see, there are far more rewards below the mean than above it, but the big rewards are much bigger. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
-
-```{python}
+#
+#
+#
+#
+#
 # | label: fig-exponential_distribution_pdf
 # | fig-cap: "Example of an Exponential Distribution"
 # | fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
@@ -112,15 +114,15 @@ plt.gca().xaxis.set_major_formatter(formatter)
 plt.xlabel('prize')
 plt.ylabel('probability density function')
 plt.show()
-```
-
-Machines with an identical distribution of random prizes are not interesting though. Why? Well, there's no "good" machine to pick. Whether you pick one machine or hop around, you would have the same expected prize. The actual prize you win will vary through random chance which is not predictable.
-
-Instead, we are interested in the cases where playing different machines has different expected outcomes. In this case, we want to have a systematic approach to deciding which machine to play to maximize our rewards. This maps back to other decisions we might make in our day-to-day lives, such as choosing a restaurant. The meals you get at a restaurant would probably have a less variability than my model here, but despite on-days and off-days, some restaurants are just better on average.
-
-Creating a random walk with mean recursion for each of the three machines looks like this (noting that these are *expected* prizes, not actual prizes):
-
-```{python}
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # | label: fig-expected_reward
 # | fig-cap: "Expected Rewards for each of 3 Machines"
 # | fig-alt: "A line-plot of the expected rewards to each of 3 machines."
@@ -190,11 +192,11 @@ plt.ylim(0.6, 1.8)
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
-```
-
-The actual prizes you would win if you played all the machines at the same time would look as follows:
-
-```{python}
+#
+#
+#
+#
+#
 # | label: fig-reward
 # | fig-cap: "Actual Rewards for each of 3 Machines"
 # | fig-alt: "A scatter plot of the rewards to each of 3 machines."
@@ -209,13 +211,13 @@ plt.ylim(0.0, 11)
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
-```
-
-### The Oracle Strategy
-
-We can also plot what we call the "oracle", which is a model with perfect information, i.e. it knows which machine is the best to play on each turn. The expected return to the oracle looks like this:
-
-```{python}
+#
+#
+#
+#
+#
+#
+#
 # | label: fig-expected_reward_oracle
 # | fig-cap: "Expected Prizes under the Oracle Strategy"
 # | fig-alt: "A scatter plot of the prizes won by the Oracle Strategy."
@@ -236,17 +238,17 @@ plt.ylim(0.6, 1.8)
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
-```
-
-We can track how successful the oracle strategy was over time by taking the running average of the prizes it won throughout the game:
-
-That's not astonishing - even a strategy with perfect information is only barely coming out ahead - remember that each game costs $1 to play!
-
-## The Random Strategy
-
-Another strategy we could use is to pick a machine to play at random in each round. 
-
-```{python}
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # | label: fig-average_reward_random
 # | fig-cap: "Running Average of Prizes won by Random Strategy "
 # | fig-alt: "Running Average of Prizes won by Random Strategy."
@@ -284,11 +286,11 @@ plt.ylabel("average_prize")
 formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
-```
-
-## Exploration v. Exploitation
-
-```{python}
+#
+#
+#
+#
+#
 def exploit():
     running_value_estimate = np.zeros((n_iterations, n_turns, n_machines))
     running_count = np.zeros((n_iterations, n_turns, n_machines))
@@ -310,30 +312,26 @@ def exploit():
         # print(running_count)
         print("running_estimate: ", running_value_estimate[:, i, selection].shape)
         if i == 0:
-            np.put_along_axis(running_value_estimate[:, i, :], selection, exploit_rewards[:, i][:, None], axis=1)
+            np.put_along_axis(running_value_estimate[:, i, :], selection, exploit_rewards[:, i][:, None])
         else:
             running_value_estimate[:, i] = running_value_estimate[:, i-1]
-            # TODO
-            # update = (
-            #     1/np.take_along_axis(running_count[:, i, :], selection, axis=1) 
-            #     * (
-            #         exploit_rewards[:, i][:, None] 
-            #         - running_value_estimate[:, i, selection])
-            # )
-
-            # running_value_estimate[:, i, selection] = running_value_estimate[:, i, selection] + update
+            update = 
+            running_value_estimate[:, i, selection] = running_value_estimate[:, i, selection] + 1/running_count[:, i, selection] * (exploit_rewards[:, i][:, None] - running_value_estimate[:, i, selection])
         
     print(selection)
     print(running_value_estimate)
     print(running_count)
 
 exploit()
-```
+#
+#
+#
+#
 
-
-```{python}
-
-```
-
-For a more detailed exploration of the topic, I highly recommend the foundational Reinforcement Learning: An Introduction by Sutton and Barto.
-
+#
+#
+#
+#
+#
+#
+#
