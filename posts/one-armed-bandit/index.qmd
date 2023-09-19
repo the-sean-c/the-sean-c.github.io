@@ -63,6 +63,7 @@ df = pd.DataFrame(
     }
 )
 
+# Format table
 d = dict(selector="th",
     props=[('text-align', 'center')])
 
@@ -70,7 +71,6 @@ d = dict(selector="th",
     .format({'prize': '${:,.2f}'})
     .set_properties(**{'width':'10em', 'text-align':'center'})
     .set_table_styles([d]))
-
 ```
 
 I will be modelling the prizes won by a player as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample rewards. As you can see, there are far more rewards below the mean than above it, but the big rewards are much bigger. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
@@ -81,7 +81,7 @@ I will be modelling the prizes won by a player as an exponential distribution. T
 # | fig-alt: "A plot of the exponential distribution probability density overlain by some sample points."
 
 # Parameters
-rng = np.random.default_rng(5)
+rng = np.random.default_rng(7)
 mean = 0.99
 lambda_param = 1.0 / mean
 x = np.linspace(0, 6, 400)  # Generate x values
@@ -251,6 +251,7 @@ Another strategy we could use is to pick a machine to play at random in each rou
 # | fig-cap: "Running Average of Prizes won by Random Strategy "
 # | fig-alt: "Running Average of Prizes won by Random Strategy."
 
+# Oracle Strategy
 oracle_choice = np.argmax(e_rewards, axis=2, keepdims=True)
 oracle_rewards = np.take_along_axis(rewards, oracle_choice, axis=2)
 oracle_rewards = np.squeeze(oracle_rewards)
@@ -259,6 +260,7 @@ turns = np.array(list(range(1, n_turns+1)))
 average_oracle_rewards = np.cumsum(oracle_rewards, axis=1) / turns
 average_oracle_rewards = np.mean(average_oracle_rewards, axis=0)
 
+# Random Strategy
 random_choice = rng.integers(0, n_machines, (n_iterations, n_turns))
 random_choice = np.expand_dims(random_choice, 2)
 random_rewards = np.take_along_axis(rewards, random_choice, axis=2)
@@ -267,8 +269,8 @@ random_rewards = np.squeeze(random_rewards)
 turns = np.array(list(range(1, random_rewards.shape[1]+1)))
 average_random_rewards = np.cumsum(random_rewards, axis=1) / turns
 average_random_rewards = np.mean(average_random_rewards, axis=0)
-# print(average_random_rewards.shape)
 
+# Plotting
 sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
 sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
 
@@ -289,45 +291,70 @@ plt.show()
 ## Exploration v. Exploitation
 
 ```{python}
-def exploit():
+def strategy(epsilon: float = 0.05, alpha: float=None, initial_value: float = None):
+    # Initialize vectors
     running_value_estimate = np.zeros((n_iterations, n_turns, n_machines))
-    running_count = np.zeros((n_iterations, n_turns, n_machines))
+    running_count = np.zeros((n_iterations, n_turns, n_machines), dtype=int)
     exploit_rewards = np.zeros((n_iterations, n_turns))
-    for i in range(n_iterations):
+    running_selection = np.zeros((n_iterations, n_turns), dtype=int)
+    selection = np.zeros(n_iterations, dtype=int)[:, None]
+
+    # Instantiate all random variables up front
+    random_selection = rng.integers(low=0, high=n_machines, size=(n_iterations, n_turns))
+    random_explore = rng.uniform(0, 1, size=(n_iterations, n_turns))
+    for i in range(n_turns):
         if i < n_machines:
+            # Try all machines once.
             selection = np.array([i]*n_iterations)[:, None]
         else:
-            selection = np.argmax(running_value_estimate[:, i-1, :], axis=1)[:, None]
+            # Explore with some probability epsilon
+            explore = random_explore[:, i] < epsilon
+            selection[explore] = random_selection[explore, i][:, None]
+            # Otherwise, use greedy selection (select machine thought most valuable)
+            selection[~explore] = np.argmax(running_value_estimate[~explore, i-1, :], axis=1)[:, None]
 
-        print("selection: ", selection.shape)
-        print("rewards: ", rewards[:, i, :].shape)
-        print("exploit_rewards: ", exploit_rewards[:, i].shape)
+        running_selection[:, i] = selection[:, 0]
+
         exploit_rewards[:, i] = np.take_along_axis(rewards[:, i, :], selection, axis=1)[:, 0]
 
         if i > 0:
-            running_count[:, i] = running_count[:, i - 1]
-        running_count[:, i, selection] += 1
-        # print(running_count)
-        print("running_estimate: ", running_value_estimate[:, i, selection].shape)
-        if i == 0:
+            running_count[:, i, :] = running_count[:, i - 1, :]
+        update_count = np.zeros((n_iterations, n_machines))
+        np.put_along_axis(update_count, selection, 1, axis = 1)
+        running_count[:, i, :] = running_count[:, i, :] + update_count
+
+        if i < n_machines and initial_value is None:
+            # If initial_value is None, start with initial value observed in machines.
+            # NOTE: initial iterations could be randomized, but iterating along machines
+            # 1, 2, 3, ... is random enough for this exercise.
             np.put_along_axis(running_value_estimate[:, i, :], selection, exploit_rewards[:, i][:, None], axis=1)
         else:
-            running_value_estimate[:, i] = running_value_estimate[:, i-1]
-            # TODO
-            # update = (
-            #     1/np.take_along_axis(running_count[:, i, :], selection, axis=1) 
-            #     * (
-            #         exploit_rewards[:, i][:, None] 
-            #         - running_value_estimate[:, i, selection])
-            # )
+            if i == 0 and initial_value is not None:
+                # If there is an initial_value, start with that.
+                running_value_estimate[:, i, :] = initial_value
+            else:
+                running_value_estimate[:, i, :] = running_value_estimate[:, i - 1, :]
 
-            # running_value_estimate[:, i, selection] = running_value_estimate[:, i, selection] + update
-        
-    print(selection)
-    print(running_value_estimate)
-    print(running_count)
+            if alpha is not None:
+                # Exponential Weight Decay
+                step_size = alpha
+            else:
+                # Incremental Mean Update
+                step_size = 1/np.take_along_axis(running_count[:, i, :], selection, axis=1) 
+            
+            update_flat = (
+                step_size
+                * (
+                    exploit_rewards[:, i][:, None] 
+                    - np.take_along_axis(running_value_estimate[:, i, :], selection, axis=1))
+            )
+            update = np.zeros((n_iterations, n_machines))
+            np.put_along_axis(update, selection, update_flat, axis=1)
+            running_value_estimate[:, i, :] = running_value_estimate[:, i, :] + update
 
-exploit()
+    return running_value_estimate, running_count, exploit_rewards, running_selection
+
+strategy()
 ```
 
 
