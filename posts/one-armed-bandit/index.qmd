@@ -1,6 +1,6 @@
 ---
 title: "Decision-Making - Beating the Bandits"
-author: "Harlow Malloc"
+author: "Sean Daly"
 date: "2023-08-03"
 categories: []
 image: "one-armed-bandits.png"
@@ -33,7 +33,8 @@ One way to view things is through the lens of reinforcement learning. This is a 
 There is a little more to the framework, such as the idea of a "state" that can impact the results of our actions. But, we will ignore that for now for the classic model I will talk about below: the multi-armed bandit. This model has the following features:
 
 - We are in a casino with slot machines (one-armed bandits[^1]).
-- There are many machines to choose from.
+- There are a number of machines to choose from.
+- We take many turns, deciding which machine to play on each turn.
 - Expected reward can change over time.
 - The reward on a given play is randomly scattered around the expected value.
 
@@ -73,7 +74,7 @@ d = dict(selector="th",
     .set_table_styles([d]))
 ```
 
-I will be modelling the prizes won by a player as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample rewards. As you can see, there are far more rewards below the mean than above it, but the big rewards are much bigger. The model will be set up with a cost to play each game of $1, and an expected reward of $0.95. The player will start with $100.
+I will be modelling the prizes won by a player as an exponential distribution. This seems appropriate because it will give us many small wins and a few very big wins. Below I have an example plot of the exponential distribution, with some sample rewards. As you can see, there are far more rewards below the mean than above it, but the big rewards are much bigger. The model will be set up with a cost to play each game of $1, and an expected reward of $0.99. The player will start with $100.
 
 ```{python}
 # | label: fig-exponential_distribution_pdf
@@ -96,7 +97,7 @@ palette = sns.color_palette()
 
 sns.lineplot(x=x, y=y)
 plt.plot([mean, mean], [lambda_param * np.exp(-lambda_param * mean), 0], color=palette[0])
-plt.annotate("expected mean", (mean, 0.2), (1.5, 0.5),
+plt.annotate("expected prize", (mean, 0.2), (1.5, 0.5),
     arrowprops=dict(facecolor=palette[0], edgecolor=palette[0],
         arrowstyle="simple,tail_width=0.07,head_width=0.7,head_length=1"))
 plt.annotate("random samples", (2.5, 0), (4, 0.3),
@@ -125,7 +126,7 @@ Creating a random walk with mean recursion for each of the three machines looks 
 # | fig-cap: "Expected Rewards for each of 3 Machines"
 # | fig-alt: "A line-plot of the expected rewards to each of 3 machines."
 
-n_iterations = 500
+n_iterations = 5000
 n_machines = 3
 n_turns = 1000
 
@@ -211,9 +212,15 @@ plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 ```
 
+## Default Strategies
+
+In order to know whether a strategy is good or bad, we need to create some benchmarks. Here we will use the Oracle strategy, which assumes we have perfect knowledge of the environment, and the Random strategy, which assumes we don't know anything at all.
+
 ### The Oracle Strategy
 
-We can also plot what we call the "oracle", which is a model with perfect information, i.e. it knows which machine is the best to play on each turn. The expected return to the oracle looks like this:
+Under this strategy, we assume that we have some oracle that tells us what to expect from each machine, i.e. it knows which machine is the best to play on each turn. However, remember that the expectation is just a parameter used to generate the output. The actual prize is generated randomly, so we can't know it in advance. So, even the oracle will not get the maximum prize on each turn. 
+
+The expected return to the oracle on each looks like this, i.e. it always plays the machine with the highest expected prize:
 
 ```{python}
 # | label: fig-expected_reward_oracle
@@ -238,13 +245,11 @@ plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 ```
 
-We can track how successful the oracle strategy was over time by taking the running average of the prizes it won throughout the game:
+### The Random Strategy
 
-That's not astonishing - even a strategy with perfect information is only barely coming out ahead - remember that each game costs $1 to play!
+Another strategy we could use is to pick a machine to play at random in each round. This might seem like an ok way to play the game, but remember, each game has a cost associated with it of $1.00, and an expected reward of $0.99. We should expect that a player following this strategy will not quite get back the money they spend on the machine.
 
-## The Random Strategy
-
-Another strategy we could use is to pick a machine to play at random in each round. 
+The plots above all track a single game, where a player sits down and plays 1000 games. To see how effective our strategies are, we will instead look at the average prize per turn in a Monte Carlo/Bootstrap simulation with 5000 iterations:
 
 ```{python}
 # | label: fig-average_reward_random
@@ -288,14 +293,34 @@ plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 ```
 
-## Exploration v. Exploitation
+As expected, the random strategy just about fails to justify the $1.00 price to play the game. On average, it hands out a prize of just less than that.
+
+## Some Simple Strategies
+
+Now, we will look at some simple rules that can be used to play the game.
+
+### Exploitation
+
+Here, "exploitation" refers to exploiting the knowledge that we have. The way this one will work is that we will play each machine once. After that, we will assume that the best machine we saw in the initial round will be the best for the rest of the game. Let's see what happens when we stick to our guns.
 
 ```{python}
-def strategy(epsilon: float = 0.05, alpha: float=None, initial_value: float = None):
+def strategy(epsilon: float = 0.0, alpha: float=None, initial_value: float = None):
+    """Runs a Strategy over a Bootstrap/Monte Carlo of rewards.
+
+    Inputs:
+    -------
+    epsilon: float
+        The probability that the user will try a different machine at random in a given game.
+    alpha: float
+        The step size parameter used for exponential weighted averaging. A value of None
+        means that the mean is used.
+    initial_value: float
+        The prize expected by the player for each machine at the beginning of the game.
+    """
     # Initialize vectors
     running_value_estimate = np.zeros((n_iterations, n_turns, n_machines))
     running_count = np.zeros((n_iterations, n_turns, n_machines), dtype=int)
-    exploit_rewards = np.zeros((n_iterations, n_turns))
+    strategy_rewards = np.zeros((n_iterations, n_turns))
     running_selection = np.zeros((n_iterations, n_turns), dtype=int)
     selection = np.zeros(n_iterations, dtype=int)[:, None]
 
@@ -315,7 +340,7 @@ def strategy(epsilon: float = 0.05, alpha: float=None, initial_value: float = No
 
         running_selection[:, i] = selection[:, 0]
 
-        exploit_rewards[:, i] = np.take_along_axis(rewards[:, i, :], selection, axis=1)[:, 0]
+        strategy_rewards[:, i] = np.take_along_axis(rewards[:, i, :], selection, axis=1)[:, 0]
 
         if i > 0:
             running_count[:, i, :] = running_count[:, i - 1, :]
@@ -327,7 +352,7 @@ def strategy(epsilon: float = 0.05, alpha: float=None, initial_value: float = No
             # If initial_value is None, start with initial value observed in machines.
             # NOTE: initial iterations could be randomized, but iterating along machines
             # 1, 2, 3, ... is random enough for this exercise.
-            np.put_along_axis(running_value_estimate[:, i, :], selection, exploit_rewards[:, i][:, None], axis=1)
+            np.put_along_axis(running_value_estimate[:, i, :], selection, strategy_rewards[:, i][:, None], axis=1)
         else:
             if i == 0 and initial_value is not None:
                 # If there is an initial_value, start with that.
@@ -345,21 +370,167 @@ def strategy(epsilon: float = 0.05, alpha: float=None, initial_value: float = No
             update_flat = (
                 step_size
                 * (
-                    exploit_rewards[:, i][:, None] 
+                    strategy_rewards[:, i][:, None] 
                     - np.take_along_axis(running_value_estimate[:, i, :], selection, axis=1))
             )
             update = np.zeros((n_iterations, n_machines))
             np.put_along_axis(update, selection, update_flat, axis=1)
             running_value_estimate[:, i, :] = running_value_estimate[:, i, :] + update
 
-    return running_value_estimate, running_count, exploit_rewards, running_selection
+    return running_value_estimate, running_count, strategy_rewards, running_selection
 
-strategy()
+exploitation_results = strategy(epsilon=0.0)
+average_exploitation_rewards = np.mean(exploitation_results[2], axis=0)
+# Plotting
+sns.lineplot(x=turns, y=average_exploitation_rewards, color=palette[6], label="exploitation")
+sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0.9, 1.2)
+plt.xlabel("turn")
+plt.ylabel("average_prize")
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
 ```
+
+This turns out to be a bad strategy, no better than random chance in our example. Remember, the actual prizes in this game are randomly generated from a distribution around the expected value. The player might be more likely to see a better prize from the better machine, but because they did not play the other machines again, they never found out if one of the others might have been better after all.
+
+### Exploration
+
+In general, we will still want to exploit the information that we have found out about the machines in the game. We know that picking random machines on every turn is a strategy that will lose in the long term. But, we still need to check the other machines from time to see if we've maybe underestimated them. This leads us to the idea of exploration. With some probability, instead of picking the machine we think is best, we will instead pick one completely at random. 
+
+```{python}
+exploratation_results = strategy(epsilon=0.2)
+average_exploratation_rewards = np.mean(exploratation_results[2], axis=0)
+# Plotting
+sns.lineplot(x=turns, y=average_exploitation_rewards, color=palette[6], label="exploitation", alpha = 0.3)
+sns.lineplot(x=turns, y=average_exploratation_rewards, color=palette[6], label="exploratation")
+sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0.9, 1.2)
+plt.xlabel("turn")
+plt.ylabel("average_prize")
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+```
+
+Okay! Now we're starting to see some progress! We've hit on a way to finally start making money on these prizes (in expectation at least). **But**, there's something weird going on, our success gets worse as the game goes on.
+
+What's happening here is a result of the fact that the expected prize given out by the machine is not constant over time. In fact, over a long enough time frame, I've set the machines to vary around our expected prize value of $0.99. Because our rule takes the average over all turns of the machine, when we are on turn 1000, we are still weighing the prize we got on turn 1 the same as the prize we got on turn 999.
+
+### Recency Bias
+
+In order to combat this, what we want to do (in this particular situation) is to place more weight on recent observations. This will allow us to ride the wave when one machine is outperforming the others. We will do this using exponentially weighted averaging, with a parameter that weights recent observations just a little bit more highly than the average of all the observations we've seen so far. In this way, the ability of the early wins to influence our later decision making is reduced further and further with every turn.
+
 
 
 ```{python}
+exp_weighting_results = strategy(epsilon=0.25, alpha=0.15)
+average_exp_weighting_rewards = np.mean(exp_weighting_results[2], axis=0)
+# Plotting
+sns.lineplot(x=turns, y=average_exploitation_rewards, color=palette[6], label="exploitation", alpha=0.3)
+sns.lineplot(x=turns, y=average_exploratation_rewards, color=palette[6], label="exploratation", alpha=0.3)
+sns.lineplot(x=turns, y=average_exp_weighting_rewards, color=palette[6], label="exp_weighting")
+sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
 
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0.9, 1.2)
+plt.xlabel("turn")
+plt.ylabel("average_prize")
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+```
+
+Better again! But, we have a period at the start of the game where it takes us about 50 turns to "get up to speed". Let's see if we can do something about that.
+
+### Optimistic Starting Conditions
+
+To try and improve performance in the early turns, we will start be slightly optimistically assuming thae each machine will hand out an expected $1.10 on each round. this seems to work, but admittedly, it's not as impressive as the other strategies.
+
+```{python}
+optimistic_results = strategy(epsilon=0.25, alpha=0.15, initial_value=1.1)
+average_optimistic_rewards = np.mean(optimistic_results[2], axis=0)
+# Plotting
+sns.lineplot(x=turns, y=average_exploitation_rewards, color=palette[6], label="exploitation", alpha=0.3)
+sns.lineplot(x=turns, y=average_exploratation_rewards, color=palette[6], label="exploratation", alpha=0.3)
+sns.lineplot(x=turns, y=average_exp_weighting_rewards, color=palette[6], label="exp_weighting", alpha=0.3)
+sns.lineplot(x=turns, y=average_optimistic_rewards, color=palette[6], label="optimistic")
+sns.lineplot(x=turns, y=average_oracle_rewards, color=palette[4], label="oracle")
+sns.lineplot(x=turns, y=average_random_rewards, color=palette[5], label="random")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0.9, 1.2)
+plt.xlabel("turn")
+plt.ylabel("average_prize")
+
+formatter = ticker.FuncFormatter(lambda x, pos: f'${x:.2f}')
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+```
+
+## A Note on Risk
+
+So, above we look at the average return to each strategy. But, we all know that the average is only one part of the story. We will know quickly look at how players are likely to finish up if they start with $100 and follow each of these strategies. The charts below are path dependent, so if the player runs out of money, they're out of the game.
+
+```{python}
+def final_stats(rewards: np.array, initial_holding: float=100, cost_per_play: float=1.0):
+    holdings = np.cumsum(rewards - np.ones(rewards.shape[1])[None], axis=1) + initial_holding 
+    final_holdings = holdings[:, -1]
+    final_holdings[np.any(holdings<=0, axis=1)] = 0
+
+    sorted_final_holdings = np.sort(final_holdings)
+    cdf_prob = np.arange(1, len(sorted_final_holdings) + 1) / len(sorted_final_holdings)
+    return sorted_final_holdings, cdf_prob
+
+stats_oracle = final_stats(oracle_rewards)
+stats_random = final_stats(random_rewards)
+stats_optimistic = final_stats(optimistic_results[2])
+
+plt.axvline(x=100, color='#F0F0F0')
+sns.lineplot(x=stats_oracle[0], y=stats_oracle[1], color=palette[4], label="oracle")
+sns.lineplot(x=stats_random[0], y=stats_random[1], color=palette[5], label="random")
+sns.lineplot(x=stats_optimistic[0], y=stats_optimistic[1], color=palette[6], label="optimistic")
+
+plt.grid(axis='y', color='#E5E5E5')
+sns.despine(left=True, bottom=True, top=True, right=True)
+plt.tick_params(axis='x', which='both', bottom=True, left=True)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), frameon=False)
+plt.tight_layout(rect=[0, 0, 1, 1])
+plt.ylim(0, 1)
+plt.xlabel("final_prize_money")
+plt.ylabel("continuous_density_function")
+
+formatter_perc = ticker.FuncFormatter(lambda x, pos: f'{x:.0%}')
+formatter_dollar = ticker.FuncFormatter(lambda x, pos: f'${x:.0f}')
+plt.gca().yaxis.set_major_formatter(formatter_perc)
+plt.gca().xaxis.set_major_formatter(formatter_dollar)
+plt.show()
 ```
 
 For a more detailed exploration of the topic, I highly recommend the foundational Reinforcement Learning: An Introduction by Sutton and Barto.
