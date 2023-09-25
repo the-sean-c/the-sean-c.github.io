@@ -2,13 +2,15 @@
 title: "Decision-Making - Beating the Bandits"
 author: "Sean Daly"
 date: "2023-08-03"
-categories: []
 image: "one-armed-bandits.png"
 draft: false
 toc: true
 format:
     html:
         code-fold: true
+categories:
+  - decision-making
+  - reinforcement-learning
 ---
 
 
@@ -554,7 +556,7 @@ plt.show()
 
 ## A Note on Risk
 
-So, above we look at the average return to each strategy. But, we all know that the average is only one part of the story. We will know quickly look at how players are likely to finish up if they start with $100 and follow each of these strategies. The charts below are path dependent, so if the player runs out of money, they're out of the game.
+So, above we look at the average return to each strategy. But the average is only one part of the story. To see how we might end up, we will model the paths of 5000 games, each through 500 turns. We can then easily create a plot to see how players are likely to finish up if they start with $100 and follow each of these strategies. The charts below are path dependent, so if the player runs out of money, they're out of the game.
 
 ```{python}
 # | label: fig-cdf_prizes
@@ -597,7 +599,7 @@ plt.gca().xaxis.set_major_formatter(formatter_dollar)
 plt.show()
 ```
 
-The plots above tell us that we will likely lose money over 55% of the time if we randomly pick a machine to play each time. Following the strategy we came up with with exploitationn and exploration, using exponential weighting, and optimistic initial expectations results in losing money less than 30% of the time. Due to randomness, even the oracle strategy will result in losses about 5% of the time.
+The plots above tell us that we would likely have lost money over 55% of the time if we randomly pick a machine to play each time. Following the strategy we came up with with exploitation and exploration, using exponential weighting, and optimistic initial expectations we would have lost money less than 30% of the time. Due to randomness, even the oracle strategy woult have resulted in losses about 5% of the time.
 
 ## Summary
 
