@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.seancdaly.com/about.html</loc>
-    <lastmod>2023-09-25T21:24:23.953Z</lastmod>
+    <lastmod>2023-10-31T03:57:29.362Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.seancdaly.com/posts/hidden-markov-model/index.html</loc>
+    <lastmod>2023-10-31T03:57:28.801Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/posts/one-armed-bandit/index.html</loc>
-    <lastmod>2023-09-25T21:24:23.177Z</lastmod>
+    <lastmod>2023-10-31T03:57:27.952Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/index.html</loc>
-    <lastmod>2023-09-25T21:24:23.725Z</lastmod>
+    <lastmod>2023-10-31T03:57:29.135Z</lastmod>
   </url>
 </urlset>
