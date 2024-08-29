@@ -1,0 +1,200 @@
+---
+title: "FastHTML and Tailwind"
+subtitle: "A how-to guide on how to get Tailwind working with FastHTML" 
+author: "Sean Daly"
+date: "2024-08-26"
+categories:
+    - fasthtml
+    - app-development
+image: "man-and-chart.jpeg"
+toc: true
+draft: true
+format:
+    html:
+        code-fold: true
+---
+
+If you like python and haven't checked out FastHTML you need to stop reading this right now and go to [fastht.ml](https://www.fastht.ml) right now.
+
+It comes bundled with Pico CSS by default, an awesome, lightweight CSS framework. If you've done much frontend development though, you might just be reaching for tailwind CSS as you start really tying an app together.
+
+## HTML and CSS
+
+As a quick refresher to anyone who doesn't do much web development, css is the language that tells a browser how to format html. This is the most basic html project I can think of, which just prints a header to the browser with some basic formatting.
+
+```txt
+my-project/
+├── index.html
+└── styles.css
+```
+
+```{.python filename="index.html"}
+<!DOCTYPE html>
+<head>
+    <title>My Minimal HTML</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+```{.css filename="styles.css"}
+h1 {
+  color: blue;
+  font-size: 18px;
+}
+```
+
+Above, we have just one class, "H1", but it can get unwieldy to define and maintain classes for all of the elements you put in a webapp. Think of all the types of text, buttons, labels, boxes, forms, images and more - these will all have css styles attached to them.
+
+## What is Tailwind CSS
+
+An alternative to the traditional approach above is to use a utility-first framework like Tailwind CSS. Tailwind allows you to define the styling in the html in a highly compact way, like this:
+
+```txt
+my-project/
+└── index.html
+```
+
+```{.html filename="index.html"}
+<!DOCTYPE html>
+<head>
+    <title>My Minimal HTML</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <h1 class="text-blue-500 text-lg">Hello, World!</h1>
+</body>
+</html>
+```
+
+This leads to just one file, where Tailwind CSS is downloaded directly from the CDN. The tailwind script automatically scans the html, figures out the full css for each Tailwind class, and adds (injects) the styling to the html with `<style>` tags (another way to add css to html). So inside the `<head>` tags you might have something like this:
+
+```html
+<style>
+.text-blue-500 { color: #3b82f6; }
+.text-lg { font-size: 1.125rem; }
+/* and so on... */
+</style>
+```
+
+It might not seem like you gain much here, but tailwind gets extremely powerful as the styling starts to become more complicated.
+
+## Customization
+
+However, tailwind is highly customizable, and this customization can't be done the way we did it above by including the tailwind script from the CDN. Instead, we will have to run tailwind on our code to generate the CSS file that will be used to render the webpage. Usually, if you're using a javascript framework like 
+
+<!-- TODO -->
+
+## Tailwind CLI Installation
+
+You can download and install the CLI directly, but I prefer to use package managers; they keep things up to date, and also keep a list of what I've installed so I can go back later and remove them if I want. Usually, I'd use homebrew (I use a mac), but I can't see the homebrew formula referenced on the official tailwind website. So instead I'm just going to use npm to install it globally on my machine with:
+
+```bash
+npm install -g tailwindcss
+```
+
+Installing it globally means it will be available to all your projects. 
+
+## Setting up a FastHTML project
+
+Ok, let's take a minute to set up a FastHTML project.
+
+I use the [pdm package manager](https://pdm-project.org/en/latest/). This will set up my virtual environment and a basic file structure. I would initialize the project like this (I decided to call it `basic_website`), following all the default settings, starting in my projects folder:
+
+```bash
+mkdir basic_website
+cd basic_website
+pdm init
+```
+
+My directory now looks like this. Running pdm has set up me up with the directory structure, the .gitignore file, the pyproject.toml file and a basic README.md.
+
+```txt
+basic_website
+├── .gitignore
+├── .pdm-python
+├── .venv
+│   ...
+├── README.md
+├── __pycache__
+├── pyproject.toml
+├── src
+│   └── basic_website
+│       ├── __init__.py
+│       └── __pycache__
+└── tests
+    ├── __init__.py
+    └── __pycache__
+```
+
+You can then add FastHTML with:
+
+```bash
+pdm add python-fasthtml
+```
+
+You might have to activate the virtual environment (often editors like vscode will detect them automatically). You can do that with:
+
+```bash
+source .venv/bin/activate
+```
+
+### Starting a Basic Webpage
+
+In the `src` folder, I made `app.py` here like so:
+
+```{.python filename="src/app.py"}
+import fasthtml.common as fh
+
+app, rt = fh.fast_app()
+
+
+@rt("/")
+def get():
+    return fh.Div(fh.P("Hello World!"), hx_get="/change")
+
+
+fh.serve()
+```
+
+You can run this with:
+
+```bash
+python src/app.py
+```
+
+And you can see your new webpage in your browser if you go to `http://localhost:5001`
+
+Awesome!
+
+## Tailwind
+
+In the directory where you're writing your html, you can initialize tailwind with:
+
+```bash
+tailwind init
+```
+
+Which creates `tailwind.config.js`, the file that will contain your customizations. It will set up the structure of the file, you will need to add the files to scan (including .py files) like this:
+
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./**/*.{py,html,qmd,md,js,jsx,ts,tsx,css}", // Scan all relevant files
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+Now, tailwind will crawl through each of these filetypes and turn any tailwind classes it sees into css.
+
+### Input CSS
+
+In addition to the tailwind classes you use, you'll probably also want to add some more custom css styling. 

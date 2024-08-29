@@ -1,0 +1,24 @@
+---
+title: "Making a Quarto Report Template"
+author: "Sean Daly"
+date: "2023-12-19"
+image: "template_guy.jpeg"
+draft: true
+toc: true
+format:
+    html:
+        code-fold: true
+categories:
+  - quarto
+---
+
+![](template_guy.jpeg){fig-align="center"}
+
+This is a how-to on how to make a quarto template to make a pdf report.
+
+First, navigate to the folder where you want the template to live, then run the quarto command to create an extension.
+
+```bash
+quarto create extension format:pdf myformat
+```
+
