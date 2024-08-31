@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/fasthtml_tailwind/index.html",
       "/posts/hidden-markov-model/index.html",
       "/posts/one-armed-bandit/index.html"
     ]

@@ -98,10 +98,59 @@
     "text": "Footnotes\n\n\nThe name comes from the fact that older mechanical slot machines had an arm on the side to make the machine work, and over the long run they will take all your money.↩︎"
   },
   {
+    "objectID": "posts/fasthtml_tailwind/index.html",
+    "href": "posts/fasthtml_tailwind/index.html",
+    "title": "FastHTML and Tailwind",
+    "section": "",
+    "text": "If you like python and want to do web development and haven’t checked out FastHTML you need to stop reading this right now and go to fastht.ml right now.\nIt comes bundled with Pico CSS by default, an awesome, lightweight CSS framework. If you’ve done much frontend development though, you might just be reaching for tailwind CSS as you start really tying an app together."
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#html-and-css",
+    "href": "posts/fasthtml_tailwind/index.html#html-and-css",
+    "title": "FastHTML and Tailwind",
+    "section": "HTML and CSS",
+    "text": "HTML and CSS\nAs a quick refresher to anyone who doesn’t do much web development, css is the language that tells a browser how to format html. This is the most basic html project I can think of, which just prints a header to the browser with some basic formatting.\nmy-project/\n├── index.html\n└── styles.css\n\n\nindex.html\n\n&lt;!DOCTYPE html&gt;\n&lt;head&gt;\n    &lt;title&gt;My Minimal HTML&lt;/title&gt;\n    &lt;link rel=\"stylesheet\" href=\"styles.css\"&gt;\n&lt;/head&gt;\n&lt;body&gt;\n    &lt;h1&gt;Hello, World!&lt;/h1&gt;\n&lt;/body&gt;\n&lt;/html&gt;\n\n\n\nstyles.css\n\nh1 {\n  color: blue;\n  font-size: 18px;\n}\n\nAbove, we have just one class, “H1”, but it can get unwieldy to define and maintain classes for all of the elements you put in a webapp. Think of all the types of text, buttons, labels, boxes, forms, images and more - these will all have css styles attached to them."
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#tailwind-css",
+    "href": "posts/fasthtml_tailwind/index.html#tailwind-css",
+    "title": "FastHTML and Tailwind",
+    "section": "Tailwind CSS",
+    "text": "Tailwind CSS\nAn alternative to the traditional approach above is to use a utility-first framework like Tailwind CSS. Tailwind allows you to define the styling in the html in a highly compact way, like this:\nmy-project/\n└── index.html\n\n\nindex.html\n\n&lt;!DOCTYPE html&gt;\n&lt;head&gt;\n    &lt;title&gt;My Minimal HTML&lt;/title&gt;\n    &lt;script src=\"https://cdn.tailwindcss.com\"&gt;&lt;/script&gt;\n&lt;/head&gt;\n&lt;body&gt;\n    &lt;h1 class=\"text-blue-500 text-lg\"&gt;Hello, World!&lt;/h1&gt;\n&lt;/body&gt;\n&lt;/html&gt;\n\nThis leads to just one file, where Tailwind CSS is downloaded directly from the CDN. The tailwind script automatically scans the html, figures out the full css for each Tailwind class, and adds (injects) the styling to the html with &lt;style&gt; tags (another way to add css to html). So inside the &lt;head&gt; tags you might have something like this:\n&lt;style&gt;\n.text-blue-500 { color: #3b82f6; }\n.text-lg { font-size: 1.125rem; }\n/* and so on... */\n&lt;/style&gt;\nIt might not seem like you gain much here, but tailwind gets extremely powerful as the styling starts to become more complicated.\n\nCustomization\nHowever, tailwind is highly customizable (through a file you create in your project tailwind.config.js) and this customization can’t be done the way we included the tailwind script from the CDN. Instead, we will have to run tailwind on our code to generate the CSS file that will be used to render the webpage."
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#tailwind_installation",
+    "href": "posts/fasthtml_tailwind/index.html#tailwind_installation",
+    "title": "FastHTML and Tailwind",
+    "section": "Tailwind Installation",
+    "text": "Tailwind Installation\nUsually, tailwind is called while building a web app in javascript. However, we’re using python so we’ll have to do things a little more manually. For this, tailwind has a CLI.\nYou can download and install the CLI directly, but I prefer to use package managers; they keep things up to date, and also keep a list of what I’ve installed so I can go back later and remove them if I want. Usually, I’d use homebrew (I use a mac), but I can’t see the homebrew formula referenced on the official tailwind website. So instead I’m just going to use npm to install it globally on my machine with:\nnpm install -g tailwindcss\nInstalling it globally means it will be available to all your projects."
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#initialise_project",
+    "href": "posts/fasthtml_tailwind/index.html#initialise_project",
+    "title": "FastHTML and Tailwind",
+    "section": "Setting up a FastHTML project",
+    "text": "Setting up a FastHTML project\nOk, let’s take a minute to set up a FastHTML project.\nI use the pdm package manager. This will set up my virtual environment and a basic file structure. I would initialize the project like this (I decided to call it basic_website), following all the default settings, starting in my projects folder:\nmkdir basic_website\ncd basic_website\npdm init\nmkdir static src/css src/app.py\nMy directory now looks like this. Running pdm has set up me up with the directory structure, the .gitignore file, the pyproject.toml file and a basic README.md.\nbasic_website\n├── .gitignore\n├── .pdm-python\n├── .venv\n│   ├── bin\n│   |   ├── activate\n│   |   ...\n│   ...\n├── README.md\n├── pyproject.toml\n├── src\n│   ├── app.py\n│   ├── basic_website\n│   |   └── __init__.py\n|   └── css   \n├── static\n└── tests\n    └── __init__.py\nYou can then add FastHTML with:\npdm add python-fasthtml\nYou might have to activate the virtual environment (often editors like vscode will detect them automatically). You can do that with:\nsource .venv/bin/activate\n\nStarting a Basic Webpage\nIn the src folder, I made app.py here like so:\n\n\nsrc/app.py\n\nimport fasthtml.common as fh\n\napp, rt = fh.FastHTML()\n\n\n@rt(\"/\")\ndef get():\n    return fh.Div(fh.P(\"Hello World!\"), hx_get=\"/change\")\n\n\nfh.serve()\n\nYou can run this with:\npython src/app.py\nAnd you can see your new webpage in your browser if you go to http://localhost:5001\nAwesome!\n\n\nInput Custom CSS\nIn addition to the tailwind classes you use, you’ll probably also want to add some custom css styling. I’m going to call mine main.css and put it in src/css.\nTo include tailwinds utility classes, we have to put this at the top of the css file:\n\n\nsrc/css/main.css\n\n@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\nI’m going to add css that makes the text multi-colored by adding a “multicolor-text” class:\n\n\nsrc/css/main.css\n\n.multicolor-text {\n  display: inline-block;\n  background: linear-gradient(to left, blue, green);\n  background-clip: text;\n  color: transparent;\n}\n\n\n\nTailwind\n\nInitialization\nIn the directory where you’re writing your html, you can initialize tailwind with:\ntailwind init\nWhich creates tailwind.config.js, the file that will contain your customizations. It will set up the structure of the file, but you will need to at least add the types of files to scan (including .py files) like this:\n\n\ntailwind.config.js\n\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\n    \"./**/*.{py,html,qmd,md,js,jsx,ts,tsx,css}\", // Scan all relevant files\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n};\n\nNow, tailwind will detect each of these filetypes when it crawls through the directory, and turn any tailwind classes it sees into css.\n\n\nRunning Tailwind\nNow that we’ve set up tailwind, we will have to run it using the CLI, like this, specifying our input css file and our output css file (which we will reference in our FastHTML project).\ntailwind -i ./src/css/main.css -o ./static/main.css\nIt’s a bit of a pain to run this every time you update your css, so you can set it to run continuously (i.e. keep your terminal open) by adding the watch flag:\ntailwind -i ./src/css/main.css -o ./static/main.css -w\nWhen you’re distributing it for production, you can minify the css to make it more compact by adding the minify flag:\ntailwind -i ./src/css/main.css -o ./static/main.css -m\n\n\n\nFastHTML but with Tailwind\nNow, I have to add 2 things to my app.py, the link to the stylesheet, and this code which allows FastHTML to look for main.css in my static folder:\n\n\nsrc/app.py\n\nimport fasthtml.common as fh\n\n1main_css = fh.Link(rel=\"stylesheet\", href=\"main.css\", type=\"text/css\")\n\napp = fh.FastHTML(hdrs=(main_css))\nrt = app.route\n\n\n2@rt(\"/{fname:path}.{ext:static}\")\ndef get(fname: str, ext: str):\n    return fh.FileResponse(f\"static/{fname}.{ext}\")\n\n\n@rt(\"/\")\ndef get():\n3    return fh.Div(fh.H1(\"Hello World!\", cls=\"multicolor-text text-[50px]\"))\n\n\nfh.serve()\n\n\n1\n\nAdd the css file to the app.\n\n2\n\nAllow FastHTML to look in the static folder (where tailwind puts the css file).\n\n3\n\nActually use css to style the text, applying the custom multicolor-text class from our main.css file, and the tailwind text-[50px] class to set the text to 50px."
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#result",
+    "href": "posts/fasthtml_tailwind/index.html#result",
+    "title": "FastHTML and Tailwind",
+    "section": "Result",
+    "text": "Result"
+  },
+  {
+    "objectID": "posts/fasthtml_tailwind/index.html#summary",
+    "href": "posts/fasthtml_tailwind/index.html#summary",
+    "title": "FastHTML and Tailwind",
+    "section": "Summary",
+    "text": "Summary\nLet’s recap:\n\nTo use tailwind, you will have to install it. I installed it globally above.\nThen you initialize your project, creating the FastHTML app.\nAdd a custom css file and run tailwind.\nAdd the output css file to your FastHTML app."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "blog",
     "section": "",
-    "text": "Finding Markov\n\n\nFitting Hidden Markov Models\n\n\n\n\nsimulation\n\n\ntail-risk\n\n\n\n\n\n\n\n\n\n\n\nOct 30, 2023\n\n\nSean Daly\n\n\n\n\n\n\n  \n\n\n\n\nDecision-Making - Beating the Bandits\n\n\n\n\n\n\n\ndecision-making\n\n\nreinforcement-learning\n\n\n\n\n\n\n\n\n\n\n\nAug 3, 2023\n\n\nSean Daly\n\n\n\n\n\n\nNo matching items"
+    "text": "FastHTML and Tailwind\n\n\nA how-to guide on how to get Tailwind working with FastHTML\n\n\n\n\nfasthtml\n\n\napp-development\n\n\n\n\n\n\n\n\n\n\n\nAug 26, 2024\n\n\nSean Daly\n\n\n\n\n\n\n  \n\n\n\n\nFinding Markov\n\n\nFitting Hidden Markov Models\n\n\n\n\nsimulation\n\n\ntail-risk\n\n\n\n\n\n\n\n\n\n\n\nOct 30, 2023\n\n\nSean Daly\n\n\n\n\n\n\n  \n\n\n\n\nDecision-Making - Beating the Bandits\n\n\n\n\n\n\n\ndecision-making\n\n\nreinforcement-learning\n\n\n\n\n\n\n\n\n\n\n\nAug 3, 2023\n\n\nSean Daly\n\n\n\n\n\n\nNo matching items"
   }
 ]
