@@ -1,5 +1,5 @@
 ---
-title: "Successful AI Products"
+title: "Why Innovation Fails"
 author: "Sean Daly"
 date: "2024-03-08"
 image: "celebrating_robots.jpeg"
@@ -14,7 +14,43 @@ categories:
 
 ![](celebrating_robots.png){fig-align="center"}
 
-I started a job recently as an AI Program Manager, so I've been trying to distill the key elements to describe what a successful AI product would have. 
+I was at a conference recently and saw a statistic that only 5% of AI products make it to production. That seems shocking, but before we start KPI-hacking, we should pause and see if the KPI is a true measure of what we are trying to achieve, or just a proxy.
+
+## Innovation
+
+Innovation is a tricky thing. I think a lot of what happens in large corporations is something more like adaptation than innovation. Some examples of this are dashboards, automated messaging and intranets. These are all valuable projects that require creativity and hard work, but they are ideas that people bring with them from role to role or firm to firm. They are also generally validated by social proof more than by careful exploration of potential benefits, and users generally have already dealt with versions of the idea in some form already.
+
+AI applications have basically never existed before. Even the current winners are not proven and may only work in very narrow contexts, for poorly understood reasons, so social proof alone is not a great measure for the success of projects across firms or teams.
+
+The biggest implication of this is that user input in the development process for AI products is not nearly as valuable as it is for traditional business products. Henry Ford might not have said it, but based on my interactions with business users this rings fairly true:
+
+> If I had asked people what they wanted, they would have said faster horses.
+
+## Changing Roles
+
+
+
+
+## User Experience
+
+
+
+## Lean Principles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- I started a job recently as an AI Program Manager, so I've been trying to distill the key elements to describe what a successful AI product would have. 
 
 It's a pretty tough thing to do. It's tough because AI is like a lot of things in the corporate world, there's a sort of surficial understanding of what things are, but when you dig into the details it usually turns out that different people understand them to be completely different things. One example of this is the term "market segment". It obviously makes sense that market segments are subjective, but you'd be surprised how many people in the same firm, in different roles, have a different idea of what a market segment is or should be.
 
@@ -45,7 +81,7 @@ Why do we set up a situation where we pit solutions against problems? Why not ju
     - **Solution**: We believe that implementing a CRM will allow client service staff to access a common source of knowledge about the client relationship, leading to a more consistent client experience; it will help to identify opportunities for cross-selling, and for re-prospecting old clients; and will help streamline operations.
     - **Metrics**: We believe that this will result in a decline in client churn by 5% per year, and an increase in cross-selling of 10% per year.
 
-Now, we can actually test our assumptions one by one, using surveys, interviews, protoypes etc., for both the problem and then the solution. metrics are an important part of the process, as these will help to define whether the product is delivering value for the business.
+Now, we can actually test our assumptions one by one, using surveys, interviews, protoypes etc., for both the problem and then the solution. metrics are an important part of the process, as these will help to define whether the product is delivering value for the business. -->
 
 <!-- Most decently large organizations will have some kind of process that uses business cases for project approval. The purpose of a business case is quite logical: to spell out the benefits of a project and how it will outweigh the costs. As a process, starting ab initio, it makes sense as a way to think about a project. I have come to see relying on them for project approval to be problematic though, for example^[Please note that I am in favor of CRMs when they are part of a broader strategic plan to use the data they aggregate for analytics, marketing etc.!]:
 

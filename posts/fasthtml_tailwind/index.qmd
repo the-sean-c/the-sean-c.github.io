@@ -6,15 +6,15 @@ date: "2024-08-26"
 categories:
     - fasthtml
     - app-development
-image: "man-and-chart.jpeg"
+image: "python_tailwind.png"
 toc: true
-draft: true
+draft: false
 format:
     html:
         code-fold: true
 ---
 
-If you like python and haven't checked out FastHTML you need to stop reading this right now and go to [fastht.ml](https://www.fastht.ml) right now.
+If you like python and want to do web development *and* haven't checked out FastHTML you need to stop reading this right now and go to [fastht.ml](https://www.fastht.ml) right now.
 
 It comes bundled with Pico CSS by default, an awesome, lightweight CSS framework. If you've done much frontend development though, you might just be reaching for tailwind CSS as you start really tying an app together.
 
@@ -49,7 +49,7 @@ h1 {
 
 Above, we have just one class, "H1", but it can get unwieldy to define and maintain classes for all of the elements you put in a webapp. Think of all the types of text, buttons, labels, boxes, forms, images and more - these will all have css styles attached to them.
 
-## What is Tailwind CSS
+## Tailwind CSS
 
 An alternative to the traditional approach above is to use a utility-first framework like Tailwind CSS. Tailwind allows you to define the styling in the html in a highly compact way, like this:
 
@@ -82,13 +82,13 @@ This leads to just one file, where Tailwind CSS is downloaded directly from the 
 
 It might not seem like you gain much here, but tailwind gets extremely powerful as the styling starts to become more complicated.
 
-## Customization
+### Customization
 
-However, tailwind is highly customizable, and this customization can't be done the way we did it above by including the tailwind script from the CDN. Instead, we will have to run tailwind on our code to generate the CSS file that will be used to render the webpage. Usually, if you're using a javascript framework like 
+However, tailwind is highly customizable (through a file you create in your project `tailwind.config.js`) and this customization can't be done the way we included the tailwind script from the CDN. Instead, we will have to run tailwind on our code to generate the CSS file that will be used to render the webpage.
 
-<!-- TODO -->
+## Tailwind Installation {#tailwind_installation}
 
-## Tailwind CLI Installation
+Usually, tailwind is called while building a web app in javascript. However, we're using python so we'll have to do things a little more manually. For this, tailwind has a CLI.
 
 You can download and install the CLI directly, but I prefer to use package managers; they keep things up to date, and also keep a list of what I've installed so I can go back later and remove them if I want. Usually, I'd use homebrew (I use a mac), but I can't see the homebrew formula referenced on the official tailwind website. So instead I'm just going to use npm to install it globally on my machine with:
 
@@ -98,7 +98,7 @@ npm install -g tailwindcss
 
 Installing it globally means it will be available to all your projects. 
 
-## Setting up a FastHTML project
+## Setting up a FastHTML project {#initialise_project}
 
 Ok, let's take a minute to set up a FastHTML project.
 
@@ -108,6 +108,7 @@ I use the [pdm package manager](https://pdm-project.org/en/latest/). This will s
 mkdir basic_website
 cd basic_website
 pdm init
+mkdir static src/css src/app.py
 ```
 
 My directory now looks like this. Running pdm has set up me up with the directory structure, the .gitignore file, the pyproject.toml file and a basic README.md.
@@ -117,17 +118,20 @@ basic_website
 ├── .gitignore
 ├── .pdm-python
 ├── .venv
+│   ├── bin
+│   |   ├── activate
+│   |   ...
 │   ...
 ├── README.md
-├── __pycache__
 ├── pyproject.toml
 ├── src
-│   └── basic_website
-│       ├── __init__.py
-│       └── __pycache__
+│   ├── app.py
+│   ├── basic_website
+│   |   └── __init__.py
+|   └── css   
+├── static
 └── tests
-    ├── __init__.py
-    └── __pycache__
+    └── __init__.py
 ```
 
 You can then add FastHTML with:
@@ -149,7 +153,8 @@ In the `src` folder, I made `app.py` here like so:
 ```{.python filename="src/app.py"}
 import fasthtml.common as fh
 
-app, rt = fh.fast_app()
+app, rt = fh.FastHTML()
+rt = app.route
 
 
 @rt("/")
@@ -170,7 +175,32 @@ And you can see your new webpage in your browser if you go to `http://localhost:
 
 Awesome!
 
-## Tailwind
+### Input Custom CSS {#custom_css}
+
+In addition to the tailwind classes you use, you'll probably also want to add some custom css styling. I'm going to call mine `main.css` and put it in `src/css`.
+
+To include tailwinds utility classes, we have to put this at the top of the css file:
+
+```{.css filename="src/css/main.css"}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+I'm going to add css that makes the text multi-colored by adding a "multicolor-text" class:
+
+```{.css filename="src/css/main.css"}
+.multicolor-text {
+  display: inline-block;
+  background: linear-gradient(to left, blue, green);
+  background-clip: text;
+  color: transparent;
+}
+```
+
+### Tailwind {#run_tailwind}
+
+#### Initialization
 
 In the directory where you're writing your html, you can initialize tailwind with:
 
@@ -178,9 +208,9 @@ In the directory where you're writing your html, you can initialize tailwind wit
 tailwind init
 ```
 
-Which creates `tailwind.config.js`, the file that will contain your customizations. It will set up the structure of the file, you will need to add the files to scan (including .py files) like this:
+Which creates `tailwind.config.js`, the file that will contain your customizations. It will set up the structure of the file, but you will need to at least add the types of files to scan (including .py files) like this:
 
-```js
+```{.js filename="tailwind.config.js"}
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -193,8 +223,66 @@ module.exports = {
 };
 ```
 
-Now, tailwind will crawl through each of these filetypes and turn any tailwind classes it sees into css.
+Now, tailwind will detect each of these filetypes when it crawls through the directory, and turn any tailwind classes it sees into css.
 
-### Input CSS
+#### Running Tailwind
 
-In addition to the tailwind classes you use, you'll probably also want to add some more custom css styling. 
+Now that we've set up tailwind, we will have to run it using the CLI, like this, specifying our input css file and our output css file (which we will reference in our FastHTML project).
+
+```bash
+tailwind -i ./src/css/main.css -o ./static/main.css
+```
+
+It's a bit of a pain to run this every time you update your css, so you can set it to run continuously (i.e. keep your terminal open) by adding the watch flag:
+
+```bash
+tailwind -i ./src/css/main.css -o ./static/main.css -w
+```
+
+When you're distributing it for production, you can minify the css to make it more compact by adding the minify flag:
+
+```bash
+tailwind -i ./src/css/main.css -o ./static/main.css -m
+```
+
+### FastHTML but with Tailwind {#tailwind_in_FastHTML}
+
+Now, I have to add 2 things to my `app.py`, the link to the stylesheet, and this code which allows FastHTML to look for `main.css` in my `static` folder:
+
+```{.python filename="src/app.py"}
+import fasthtml.common as fh
+
+main_css = fh.Link(rel="stylesheet", href="main.css", type="text/css") # <1>
+
+app = fh.FastHTML(hdrs=(main_css))
+rt = app.route
+
+
+@rt("/{fname:path}.{ext:static}") # <2>
+def get(fname: str, ext: str): # <2>
+    return fh.FileResponse(f"static/{fname}.{ext}") # <2>
+
+
+@rt("/")
+def get():
+    return fh.Div(fh.H1("Hello World!", cls="multicolor-text text-[50px]")) # <3>
+
+
+fh.serve()
+```
+1. Add the css file to the app.
+2. Allow FastHTML to look in the static folder (where tailwind puts the css file).
+3. Actually use css to style the text, applying the custom `multicolor-text` class from our `main.css` file, and the tailwind `text-[50px]` class to set the text to 50px.
+
+## Result
+
+![](hello_world.png){fig-align="center"}
+
+## Summary
+
+Let's recap:
+
+- To use tailwind, you will have to install it. I installed it globally [above](##tailwind_installation).
+- Then you [initialize your project](#initialise_project), creating the FastHTML app.
+- Add a [custom css file](#custom_css) and [run tailwind](#run_tailwind).
+- Add the output css file to your [FastHTML app](#tailwind_in_FastHTML).
