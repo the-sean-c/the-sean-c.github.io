@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sean Daly">
-<meta name="dcterms.date" content="2024-03-08">
+<meta name="dcterms.date" content="2024-11-10">
 
-<title>Sean Daly - Why Innovation Fails</title>
+<title>Sean Daly - A New Intelligence, A New Interface</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,9 +108,11 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Why Innovation Fails</h1>
+      <h1 class="title">A New Intelligence, A New Interface</h1>
+            <p class="subtitle lead">Going past the Terminal (Again)</p>
                                 <div class="quarto-categories">
-                <div class="quarto-category">product</div>
+                <div class="quarto-category">ai</div>
+                <div class="quarto-category">design</div>
               </div>
                   </div>
   </div>
@@ -128,7 +130,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 8, 2024</p>
+        <p class="date">November 10, 2024</p>
       </div>
     </div>
     
@@ -144,13 +146,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#innovation" id="toc-innovation" class="nav-link active" data-scroll-target="#innovation">Innovation</a></li>
-  <li><a href="#changing-roles" id="toc-changing-roles" class="nav-link" data-scroll-target="#changing-roles">Changing Roles</a></li>
-  <li><a href="#user-experience" id="toc-user-experience" class="nav-link" data-scroll-target="#user-experience">User Experience</a></li>
-  <li><a href="#lean-principles" id="toc-lean-principles" class="nav-link" data-scroll-target="#lean-principles">Lean Principles</a>
-  <ul class="collapse">
-  <li><a href="#user-experience-1" id="toc-user-experience-1" class="nav-link" data-scroll-target="#user-experience-1">User Experience</a></li>
-  </ul></li>
+  <li><a href="#the-terminal-why-dont-we-use-it" id="toc-the-terminal-why-dont-we-use-it" class="nav-link active" data-scroll-target="#the-terminal-why-dont-we-use-it">The Terminal: Why Don’t We Use It?</a></li>
+  <li><a href="#paper-why-dont-we-all-write-shakespeare" id="toc-paper-why-dont-we-all-write-shakespeare" class="nav-link" data-scroll-target="#paper-why-dont-we-all-write-shakespeare">Paper: Why Don’t We All Write Shakespeare?</a></li>
+  <li><a href="#ai-beyond-the-chat-interface" id="toc-ai-beyond-the-chat-interface" class="nav-link" data-scroll-target="#ai-beyond-the-chat-interface">AI: Beyond the Chat Interface</a></li>
   </ul>
 </nav>
     </div>
@@ -162,97 +160,43 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="celebrating_robots.png" class="img-fluid figure-img"></p>
+<p><img src="man_and_machine.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
-<p>I was at a conference recently and saw a statistic that only 5% of AI products make it to production. That seems shocking, but before we start KPI-hacking, we should pause and see if the KPI is a true measure of what we are trying to achieve, or just a proxy.</p>
-<section id="innovation" class="level2">
-<h2 class="anchored" data-anchor-id="innovation">Innovation</h2>
-<p>Innovation is a tricky thing. I think a lot of what happens in large corporations is something more like adaptation than innovation. Some examples of this are dashboards, automated messaging and intranets. These are all valuable projects that require creativity and hard work, but they are ideas that people bring with them from role to role or firm to firm. They are also generally validated by social proof more than by careful exploration of potential benefits, and users generally have already dealt with versions of the idea in some form already.</p>
-<p>AI applications have basically never existed before. Even the current winners are not proven and may only work in very narrow contexts, for poorly understood reasons, so social proof alone is not a great measure for the success of projects across firms or teams.</p>
-<p>The biggest implication of this is that user input in the development process for AI products is not nearly as valuable as it is for traditional business products. Henry Ford might not have said it, but based on my interactions with business users this rings fairly true:</p>
-<blockquote class="blockquote">
-<p>If I had asked people what they wanted, they would have said faster horses.</p>
-</blockquote>
-</section>
-<section id="changing-roles" class="level2">
-<h2 class="anchored" data-anchor-id="changing-roles">Changing Roles</h2>
-</section>
-<section id="user-experience" class="level2">
-<h2 class="anchored" data-anchor-id="user-experience">User Experience</h2>
-</section>
-<section id="lean-principles" class="level2">
-<h2 class="anchored" data-anchor-id="lean-principles">Lean Principles</h2>
-<!-- I started a job recently as an AI Program Manager, so I've been trying to distill the key elements to describe what a successful AI product would have. 
-
-It's a pretty tough thing to do. It's tough because AI is like a lot of things in the corporate world, there's a sort of surficial understanding of what things are, but when you dig into the details it usually turns out that different people understand them to be completely different things. One example of this is the term "market segment". It obviously makes sense that market segments are subjective, but you'd be surprised how many people in the same firm, in different roles, have a different idea of what a market segment is or should be.
-
-This doesn't matter to me at all in my daily life, but try to actually build something means I have to nail these ideas down.
-
-## What is AI?
-
-I've given the talk many times about how AI is a blanket term that can cover statistical, machine-learning and rule-based systems that can do tasks that people would have had to do in the past. It's pretty clear though, that when regular people say AI they're talking about some kind of human-like entity that's able to do a bunch of very smart things really quickly, and achieve some aim that the user wanted to get done in a kind of magical way. 
-
-There's concepts in software engineering of "procedural" v. "declarative" programming. Procedural programming involves setting out all the steps to achieve a particular goal. It's what you do with excel: you set up a bunch of calculations, then when you change one of the inputs the calculations work themselves out one-by-one to give you the answer. It works great, but it requires you to set up the calculation ahead of time. Declarative programming only requires you to say what your goals and inputs are: the computer works out the rest.
-
-So I'm going to say that **AI is a machine that gives me what I want based on a short description of my goals and some input data.**
-
-## What is a good AI product
-
-I've played around with these ideas quite a bit, and I think the elements of an AI product have to consider the following, in order of priority:
-
-- Business Problem
-- User Experience
-- Data
-- AI System
-
-### Business Problem
-
-Why do we set up a situation where we pit solutions against problems? Why not just put products into the world if they seem like they make sense? Well, it turns out that phrasing a product as a solution to a problem allows you to phrase a hypothesis that can be tested. Here is an example:
-
-    - **Problem**: We assume that our current customer management processes are inadequate, leading to inconsistent customer experiences, missed sales opportunities, and inefficient operations. 
-    - **Solution**: We believe that implementing a CRM will allow client service staff to access a common source of knowledge about the client relationship, leading to a more consistent client experience; it will help to identify opportunities for cross-selling, and for re-prospecting old clients; and will help streamline operations.
-    - **Metrics**: We believe that this will result in a decline in client churn by 5% per year, and an increase in cross-selling of 10% per year.
-
-Now, we can actually test our assumptions one by one, using surveys, interviews, protoypes etc., for both the problem and then the solution. metrics are an important part of the process, as these will help to define whether the product is delivering value for the business. -->
-<!-- Most decently large organizations will have some kind of process that uses business cases for project approval. The purpose of a business case is quite logical: to spell out the benefits of a project and how it will outweigh the costs. As a process, starting ab initio, it makes sense as a way to think about a project. I have come to see relying on them for project approval to be problematic though, for example^[Please note that I am in favor of CRMs when they are part of a broader strategic plan to use the data they aggregate for analytics, marketing etc.!]:
-
-- They are often a means to justify a solution, e.g. "implementing a CRM will solve our problem of having no CRM".
-- Impacts to revenue and expenses are impossible to estimate. Especially when businesses don't know how much a specific task generates or costs. How do you answer a question like "how much of our revenue is due to post meeting note-taking and note sharing, and how much does making and sharing notes cost us".
-- The loop is never closed after a project is complete. Did the project generate revenue or cut expenses? Was that 5% growth in revenue due to a new CRM or did the sales team work harder? If the sales team hires more office admin staff to enter data into the CRM, is that expense considered?
-
-The way forward instead, I think, is to follow a lean innovation methodology. It's not perfect, but I like the Lean Innovation Guide by David Griesbach. He lays out a fairly simple scheme:
-
-![](lean innovation process.png){fig-align="center"}
-
-In many ways, this does in face follow the ideals of the business case, but instead of making approval of a project dependent on a fully planned project, you build prototypes and iterate on the product to let it speak for itself. If the product makes sense, people will let you know: they will literally call you and ask you how it's going.
-
-Following a lean product development cycle with prototyping to prove out value in the organization is also a way of managing the risk of innovation th
-
-![](evolutionary risk management.png){fig-align="center"} -->
-<section id="user-experience-1" class="level3">
-<h3 class="anchored" data-anchor-id="user-experience-1">User Experience</h3>
-<p>It’s hard for me to say this because I’m a statistics, machine learning, data guy, but <strong>the clear priority is User Experience</strong>. Why? Because if nobody is using the thing you made, then you’ve wasted a bunch of time. When I was researching this a little while ago, I came across Peter Morville’s User Experience Honeycomb<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. According to him, a product has a good user experience when it is:</p>
+<p>This is a favorite topic of mine at the moment, fueled by 2 ideas:</p>
 <ul>
-<li>Useful: Fulfills a need - a need which is not already being met.</li>
-<li>Usable: Easy to understand and navigate</li>
-<li>Desirable: Branding etc. makes you feel like you want to use it.</li>
-<li>Findable: Easy to find product, easy to find what you need</li>
-<li>Accessible: Considerate of people with disabilities.</li>
-<li>Credible: Users can trust the information they are told.</li>
+<li>The most powerful app on any of our computers right now is the terminal (or command line for windows folks).</li>
+<li>The most powerful idea-generation tool any of us have access to is a sheet of paper and pen.</li>
 </ul>
+<section id="the-terminal-why-dont-we-use-it" class="level2">
+<h2 class="anchored" data-anchor-id="the-terminal-why-dont-we-use-it">The Terminal: Why Don’t We Use It?</h2>
+<p>I remember being a kid in the days where you still <em>had</em> to be able to navigate DOS to get PC games to play. There was lots of <code>dir</code>, <code>cd directory</code>, <code>dir</code>, <code>program.exe</code> until you were eventually rewarded with a cascade of text and the first graphics introducing the start of the game.</p>
+<p>The terminal still exists today, but regular users rarely even see it, and probably wouldn’t know the first thing about how to interact with it. Anyone in a tech role recognizes that this black screen with a blinking cursor gives you access to everything, in a much deeper way than a gui ever can.</p>
+<p>If it is so powerful, why doesn’t everyone use it regularly? Well, you kind of have to know a long list of incantations to make it do what you want. Everything has to be precisely coded in, in a very precise way. The basics of navigation require <code>ls</code> and <code>cd</code>, making and deleting directories has <code>mkdir</code>, <code>rm</code> and <code>rm -rf</code>. That’s 4 (and a half) commands you have to just know for basic tasks that are “obvious” in a GUI.</p>
+<p>Ordinary users moved away from the terminal because they don’t have to learn the incantations for every task they might want to do. GUI’s present everything to the user, with nicely signposted happy path that you just have to click on. A GUI actually presents a tradeoff, where we actually give up a lot of funcionality and optionality in the software we use in order to get something that does what we want with a lot less mental overhead.</p>
+</section>
+<section id="paper-why-dont-we-all-write-shakespeare" class="level2">
+<h2 class="anchored" data-anchor-id="paper-why-dont-we-all-write-shakespeare">Paper: Why Don’t We All Write Shakespeare?</h2>
+<p>Believe it or not, almost every work of literature, philosophy and discovery was written on physical paper up to just a few years ago. Paper and pen holds the nearly infinite capacity to record ideas, so potentially anyone can create any idea at any time on a piece of paper.</p>
+<p>However, the fact is that we don’t.</p>
+<p>Even though paper has limitless capacity, that capacity has fewer constraints than the terminal has. A terminal, at least, has a limit in that it can only run the programs that are installed on the computer. A piece of paper can take you in any direction, in any language, with pictures, diagrams or words. However, the lack of constraints means that you don’t just have to know incantations that give you shortcuts to complete tasks, you need to actually understand how to complete the entire task yourself.</p>
+</section>
+<section id="ai-beyond-the-chat-interface" class="level2">
+<h2 class="anchored" data-anchor-id="ai-beyond-the-chat-interface">AI: Beyond the Chat Interface</h2>
+<p>So, it seems that there is a trade-off here:</p>
+<ul>
+<li>Paper: unlimited freedom, but you need to understand the details of every task,</li>
+<li>Terminal: great freedom, but need to understand terminal commands as shortcuts to complete more complicated tasks.</li>
+<li>GUI: limited freedom, but often don’t need to know anything at all to achieve an outcome.</li>
+</ul>
+<p>AI is generally at a point where, like a terminal, we are greeted by a flashing cursor, waiting for us to pilot it through a series of steps to complete a task. It is extremely powerful at taking our inputs and acting on them. However, there is a difficulty in knowing what the AI is capable of doing, and how to phrase your requests so that it actually does them. This can be seen in ChatGPT, where you need to know that, say, ChatGPT can generate pictures, and also that to do it you need to ask it to “make me a picture of..”.</p>
+<p>There will be a new generation of AI apps that will be more GUI-like, and users will gravitate to them. Somehow, apps will be designed to drive the conversation, limiting the power of AI to do <em>anything</em>, but giving regular, non-ai-expertss a greater ability to do <em>something</em>.</p>
+<p>There is as much opportunity in innovating around the interface to AI as there is in coming up with cool new models and tools.</p>
 
 
 </section>
-</section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>https://www.usability.gov/what-and-why/user-experience.html<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
