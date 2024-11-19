@@ -207,11 +207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="man-machines.jpeg" class="img-fluid figure-img"></p>
-</figure>
-</div>
+<!-- ![](man-machines.jpeg){fig-align="center"} -->
 <p>Decisions are hard. We can’t see how things will turn out, and we never have all the information we need to make the best decision right now. However, there are systematic ways to work through the choices we make to give us a better chance of coming out on top.</p>
 <p>One way to view things is through the lens of reinforcement learning. This is a flexible framework for decision making that assumes there is some environment out there to act on, and whatever we decide to do the environment gives us some feedback in the form of a reward or a punishment. Through these interactions, we can learn a better decision making rule.</p>
 <p>There is a little more to the framework, such as the idea of a “state” that can impact the results of our actions, and there are diferent ways of setting up a model for analysis. But, we will ignore that for now for the classic model I will talk about below: the multi-armed bandit. The way I set this up allows for the following types of decisions:</p>
@@ -262,55 +258,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <style type="text/css">
-#T_ab32a th {
+#T_683c8 th {
   text-align: center;
 }
-#T_ab32a_row0_col0, #T_ab32a_row0_col1, #T_ab32a_row0_col2, #T_ab32a_row1_col0, #T_ab32a_row1_col1, #T_ab32a_row1_col2, #T_ab32a_row2_col0, #T_ab32a_row2_col1, #T_ab32a_row2_col2, #T_ab32a_row3_col0, #T_ab32a_row3_col1, #T_ab32a_row3_col2, #T_ab32a_row4_col0, #T_ab32a_row4_col1, #T_ab32a_row4_col2, #T_ab32a_row5_col0, #T_ab32a_row5_col1, #T_ab32a_row5_col2 {
+#T_683c8_row0_col0, #T_683c8_row0_col1, #T_683c8_row0_col2, #T_683c8_row1_col0, #T_683c8_row1_col1, #T_683c8_row1_col2, #T_683c8_row2_col0, #T_683c8_row2_col1, #T_683c8_row2_col2, #T_683c8_row3_col0, #T_683c8_row3_col1, #T_683c8_row3_col2, #T_683c8_row4_col0, #T_683c8_row4_col1, #T_683c8_row4_col2, #T_683c8_row5_col0, #T_683c8_row5_col1, #T_683c8_row5_col2 {
   width: 10em;
   text-align: center;
 }
 </style>
 
 <div id="tbl-6_turns" class="anchored">
-<table id="T_ab32a" data-quarto-postprocess="true" class="table table-sm table-striped small">
+<table id="T_683c8" data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Table&nbsp;1: Results from 6 Turns</caption>
 <thead>
 <tr class="header">
-<th id="T_ab32a_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">turn</th>
-<th id="T_ab32a_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">machine_id</th>
-<th id="T_ab32a_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">prize</th>
+<th id="T_683c8_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">turn</th>
+<th id="T_683c8_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">machine_id</th>
+<th id="T_683c8_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">prize</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_ab32a_row0_col0" class="data row0 col0">1</td>
-<td id="T_ab32a_row0_col1" class="data row0 col1">1</td>
-<td id="T_ab32a_row0_col2" class="data row0 col2">$0.10</td>
+<td id="T_683c8_row0_col0" class="data row0 col0">1</td>
+<td id="T_683c8_row0_col1" class="data row0 col1">1</td>
+<td id="T_683c8_row0_col2" class="data row0 col2">$0.10</td>
 </tr>
 <tr class="even">
-<td id="T_ab32a_row1_col0" class="data row1 col0">2</td>
-<td id="T_ab32a_row1_col1" class="data row1 col1">2</td>
-<td id="T_ab32a_row1_col2" class="data row1 col2">$1.32</td>
+<td id="T_683c8_row1_col0" class="data row1 col0">2</td>
+<td id="T_683c8_row1_col1" class="data row1 col1">2</td>
+<td id="T_683c8_row1_col2" class="data row1 col2">$1.32</td>
 </tr>
 <tr class="odd">
-<td id="T_ab32a_row2_col0" class="data row2 col0">3</td>
-<td id="T_ab32a_row2_col1" class="data row2 col1">3</td>
-<td id="T_ab32a_row2_col2" class="data row2 col2">$0.29</td>
+<td id="T_683c8_row2_col0" class="data row2 col0">3</td>
+<td id="T_683c8_row2_col1" class="data row2 col1">3</td>
+<td id="T_683c8_row2_col2" class="data row2 col2">$0.29</td>
 </tr>
 <tr class="even">
-<td id="T_ab32a_row3_col0" class="data row3 col0">4</td>
-<td id="T_ab32a_row3_col1" class="data row3 col1">1</td>
-<td id="T_ab32a_row3_col2" class="data row3 col2">$1.18</td>
+<td id="T_683c8_row3_col0" class="data row3 col0">4</td>
+<td id="T_683c8_row3_col1" class="data row3 col1">1</td>
+<td id="T_683c8_row3_col2" class="data row3 col2">$1.18</td>
 </tr>
 <tr class="odd">
-<td id="T_ab32a_row4_col0" class="data row4 col0">5</td>
-<td id="T_ab32a_row4_col1" class="data row4 col1">2</td>
-<td id="T_ab32a_row4_col2" class="data row4 col2">$1.10</td>
+<td id="T_683c8_row4_col0" class="data row4 col0">5</td>
+<td id="T_683c8_row4_col1" class="data row4 col1">2</td>
+<td id="T_683c8_row4_col2" class="data row4 col2">$1.10</td>
 </tr>
 <tr class="even">
-<td id="T_ab32a_row5_col0" class="data row5 col0">6</td>
-<td id="T_ab32a_row5_col1" class="data row5 col1">3</td>
-<td id="T_ab32a_row5_col2" class="data row5 col2">$0.17</td>
+<td id="T_683c8_row5_col0" class="data row5 col0">6</td>
+<td id="T_683c8_row5_col1" class="data row5 col1">3</td>
+<td id="T_683c8_row5_col2" class="data row5 col2">$0.17</td>
 </tr>
 </tbody>
 </table>
