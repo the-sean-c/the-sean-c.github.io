@@ -6,7 +6,7 @@ date: "2024-11-18"
 categories:
     - ai
     - design
-image: "man-and-machine-full.png"
+# image: "man-and-machine-full.png"
 toc: true
 draft: false
 format:

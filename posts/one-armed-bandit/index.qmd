@@ -2,7 +2,7 @@
 title: "Decision-Making - Beating the Bandits"
 author: "Sean Daly"
 date: "2023-08-03"
-image: "one-armed-bandits.png"
+# image: "one-armed-bandits.png"
 draft: false
 toc: true
 format:

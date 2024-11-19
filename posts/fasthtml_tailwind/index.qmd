@@ -6,7 +6,7 @@ date: "2024-08-26"
 categories:
     - fasthtml
     - app-development
-image: "python_tailwind.png"
+# image: "python_tailwind.png"
 toc: true
 draft: false
 format:
