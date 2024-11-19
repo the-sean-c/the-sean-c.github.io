@@ -25,7 +25,7 @@ import matplotlib.ticker as ticker
 import seaborn as sns
 ```
 
-![](man-machines.jpeg){fig-align="center"}
+<!-- ![](man-machines.jpeg){fig-align="center"} -->
 
 Decisions are hard. We can't see how things will turn out, and we never have all the information we need to make the best decision right now. However, there are systematic ways to work through the choices we make to give us a better chance of coming out on top.
 
