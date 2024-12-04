@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sean Daly">
-<meta name="dcterms.date" content="2024-11-18">
+<meta name="dcterms.date" content="2024-12-03">
 
-<title>Sean Daly - Churn</title>
+<title>Sean Daly - Drop the BAS</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -62,8 +62,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -110,8 +108,8 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Churn</h1>
-            <p class="subtitle lead">Around and Around We Go</p>
+      <h1 class="title">Drop the BAS</h1>
+            <p class="subtitle lead">Learning: the Precursor to Ideas</p>
                                 <div class="quarto-categories">
                 <div class="quarto-category">ai</div>
                 <div class="quarto-category">design</div>
@@ -132,7 +130,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">November 18, 2024</p>
+        <p class="date">December 3, 2024</p>
       </div>
     </div>
     
@@ -148,9 +146,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#an-arms-length-description-of-churn" id="toc-an-arms-length-description-of-churn" class="nav-link active" data-scroll-target="#an-arms-length-description-of-churn">An Arms-Length Description of Churn</a></li>
-  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">Approach</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#the-trivium" id="toc-the-trivium" class="nav-link active" data-scroll-target="#the-trivium">The Trivium</a></li>
+  <li><a href="#bas" id="toc-bas" class="nav-link" data-scroll-target="#bas">BAS</a></li>
+  <li><a href="#beyond-engineering" id="toc-beyond-engineering" class="nav-link" data-scroll-target="#beyond-engineering">Beyond Engineering</a>
+  <ul class="collapse">
+  <li><a href="#lean-innovation" id="toc-lean-innovation" class="nav-link" data-scroll-target="#lean-innovation">Lean Innovation</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -160,35 +162,70 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>When I was maybe 12, around the time of entrance exams to secondary school, there always seemed to be questions about how fast a bathtub would fill if the tap was flowing and the drain was unplugged. That’s basically why churn is important - businesses want to be bathtubs full of paying customers.</p>
-<section id="an-arms-length-description-of-churn" class="level2">
-<h2 class="anchored" data-anchor-id="an-arms-length-description-of-churn">An Arms-Length Description of Churn</h2>
-<p>More mathematically<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, churn rate is usually expressed as a percentage for a period. It can be calculated a number of different ways for different businesses, but it’s often taken to be<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
-<p><span class="math display">\[
-\text{Churn Rate} = \frac{\text{\# Customers Lost over Period}}{\text{\# Customers due to Renew in Period}}
-\]</span></p>
-<p>There’s lot’s of problems, even with this super basic definition. I really like <a href="https://ragulpr.github.io/2016/12/22/WTTE-RNN-Hackless-churn-modeling/#churn-prediction-is-hard">Elgin’s Blog</a> post on this topic. I read it some time back and it always struck me as clear eyed, and I happen to like the idea of RNNs, as you will see below. Anyone who has actually tried to predict or even measure churn will agree that even in the simple formula above, there’s a lot of questions to be answered:</p>
+<p>There always seems to be a lot of startups building things like note-taking, dating and educational apps. These are seductive because the people building them are likely to be young, single and recently out of college, and it’s much easier to build something that solves a problem you know well. It’s harder to build something in a space that you don’t have day-to-day experience.</p>
+<p>People who work on solutions in unusual niches like payments processing can hit on really lucrative solutions to pain points by leveraging their experience. So how do you gain that experience?</p>
+<section id="the-trivium" class="level2">
+<h2 class="anchored" data-anchor-id="the-trivium">The Trivium</h2>
+<p>Back in the middle ages, after hundreds of years of sifting through the materials from ancient Greece and Rome, a method of teaching the “liberal arts” emerged that followed the pattern:</p>
 <ul>
-<li>What is a “customer”? If you ever work with CRM data, the notion that there are rigid entities that can be defined as customers breaks down pretty fast.</li>
-<li>What is the “period”? And more subtely, is the loss counted in the period we find out we’ve lost the customer, or when they stop paying us?</li>
-<li>What does it mean to “lose” a customer? What if we lose them for a month and they come back, is this what we want to capture? What if we lose 95% of our revenue from them? What if they split into 3 customers, one of which goes to our competitors, and one just has absolutely no need of the service?</li>
-<li>What does it mean when a customer is “due to renew”? If they have multiple contracts with us, is it just the portion of the contract that is counted?</li>
+<li>Grammar</li>
+<li>Logic</li>
+<li>Rhetoric</li>
 </ul>
-<p>Answering these questions is a great way to waste time in committee. The best way to do it is to have someone with good taste in analytics make the decision; and they should generally be the most simple definitions for the business that make sense. They can be adapted later if the calculation misses something it really shouldn’t.</p>
-</section>
-<section id="approach" class="level2">
-<h2 class="anchored" data-anchor-id="approach">Approach</h2>
-<p>Let’s assume we have done all the hard work, and now we have a great dataset that we want to analyse.</p>
-<p>There’s a great temptation to try and predict churn on a period by period basis. By this I mean: say we see that mostly people with blue shirts stop being customers in March, so in April we figure that people with blue shirts are most likely going ot leave us. This doesn’t really work that well for a two main reasons:</p>
+<p>Grammar focused on the underlying mechanics of language, such as vocabulary and sentence structure. It also focused on rote learning and memorization. It’s probably similar to how primary education works (or at least how it worked when I was a child), where you learn how to read and write, and also learn things like common sayings and simple poems.</p>
+<p>Logic was a development on grammar. Going beyond the direct meaning of words, it dealt with how the ideas they expressed held together. The purpose was to question the material, understand the arguments being made, and generally think critically about the material you were reading.</p>
+<p>Finally, rhetoric took the ideas that you learned in critiquing others, and taught you to create new ideas yourself, and to argue their validity in a persuasive way.</p>
+<p>In a way, these could be thought of as:</p>
 <ul>
-<li>There might have been something unusual in the previous period that made people in blue shirts want to switch providers.</li>
-<li>Including multiple periods to try and account for unusual occurrences in a given period leads to double counting in your data, unless your churn rate is so high that customers don’t stick around for more than one or two periods.</li>
+<li>Grammar = what?</li>
+<li>Logic = why?/how?</li>
+<li>Rhetoric = what next?</li>
 </ul>
-<p>A much better way is to try and predict the lifespan of a customer relationship. It turns out that engineers have been trying to predict lifespans for a long time, for products like dishwashers and airplanes, so we can pick up the statistical methods that have been developed and apply them to our churn prediction problem.</p>
 </section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Martinsson, E. (2016) WTTE-RNN - Less hacky churn prediction · Focus on the objective, Egil’s Blog. Available at: https://ragulpr.github.io/2016/12/22/WTTE-RNN-Hackless-churn-modeling/#churn-prediction-is-hard (Accessed: 19 November 2024).</p>
+<section id="bas" class="level2">
+<h2 class="anchored" data-anchor-id="bas">BAS</h2>
+<p>At the time I read this, I was becoming a senior consulting civil engineer in Canada. That meant that I was the one teaching junior engineers how to approach their work. As always happens, you really deepen your understanding of a subject when you go to teach it to someone else. Anyway, I liked the general progression of the trivium, and I could see that it didn’t just apply to a liberal education.</p>
+<p>Shooting from the hip doesn’t really work in civil engineering. It’s expensive to create drawings, and redoing them over and over is a great way to waste time. Instead, you need to be methodical and start at the beginning. Each project is basically a set of inputs and constraints, with a target that you are trying to achieve. The process I came up with to do this methodically was:</p>
+<ul>
+<li>Basis (derived from the greek for “foundation”)</li>
+<li>Analysis (“breaking up”)</li>
+<li>Synthesis (“composition”)</li>
+</ul>
+<p>The basis of a project is the bare facts, so these should be assembled first:</p>
+<ul>
+<li>Who is the client? What are they trying to achieve?</li>
+<li>Where is the site? What are the conditions there like?</li>
+<li>What are the constraints? e.g.&nbsp;legal, environmental, cost.</li>
+</ul>
+<p>With all the facts, analysis is then an interrogation of what you have assembled. The more fully you have gathered the facts, the more straightforward the analysis usually becomes. The outcome of the analysis is a mental model for how the elements of the project fit together. You can infer underlying mechanisms from the observations you have made, and from that assess how the clients goals conflict with conditions on the ground.</p>
+<p>Finally, once you’ve made a model for how the project fits together, you can then start to experiment and create the design for something new.</p>
+<p>There was a great side effect to this way of working: because everything flowed logically together in design, it made it easy to write clear, logical reports that explained why a project had to be done a certain way. Good communication makes it easy to retain clients.</p>
+</section>
+<section id="beyond-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="beyond-engineering">Beyond Engineering</h2>
+<p>Civil engineering wasn’t the end of the story. I left many years ago, and I’ve since worked in roles that range between operations and product management (with a strong technical weighting) in the finance and insurance industries.</p>
+<p>The same procedure still works. In fact it’s probably more important. Often, I’m approached by people who come with solutions rather than problems, which is at the wrong end of the process. Starting by assembling facts, then analyzing them leads to much more effective solutions than merely taking a solution spec and working through it.</p>
+<p>It might seem here that I’m advocating for a waterfall-style product delivery method, but that’s not the case. In fact, this process supplements lean innovation methods very neatly.</p>
+<section id="lean-innovation" class="level3">
+<h3 class="anchored" data-anchor-id="lean-innovation">Lean Innovation</h3>
+<p>Lean innovation is an iterative process that relies on developing assumptions, running measurable experiments to test those assumptions, then improving (learning). A typical product might go through the following stages <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>:</p>
+<ul>
+<li>Problem - Solution fit</li>
+<li>Product - Market fit</li>
+<li>Scaling</li>
+</ul>
+<p>People like to say that “there’s no bad ideas”, but from experience I can say that there are definitely good ones. I’ve done a lot of experimentation in my career, and I can tell you that you can have better ideas in areas where you know how things work than when you do not.</p>
+<p>With the goal of moving more wisely, I try to learn as much as I can before starting to develop assumptions. This puts lean innovation into the synthesis stage of the process, so we have:</p>
+<ul>
+<li>Basis - gather facts: interview users in the field, review consultant reports, examine existing solutions to see who they are targeting and get a sense of their views of the problems.</li>
+<li>Analysis - assemble the facts together: try to fit these into a mental model to try and infer underlying mechanisms that are giving rise to your observations.</li>
+<li>Synthesis - build: armed with a model for how your problem space fits together, you can now make assumptions for how your interventions will play out. Better assumptions are more likely to lead to better experiment results.</li>
+</ul>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Knowing more is better than knowing less. Lean methods are tactically correct, but strategically it can be hard to find your way if you don’t know the terrain. Methodically following a process of assembling a basis of facts then analyzing them to assemble a model of the underlying mechanism for your problem space can set the stage for a much more effective synthesis of something new.</p>
 
 
 </section>
@@ -197,8 +234,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Note the “more” here - this is hand-wavey business math.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>I don’t want to dive any deeper into the rate calculation other than to say that there are many other ways to calculate it.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Griesbach, D. 2023. <em>Lean Innovation Guide</em><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

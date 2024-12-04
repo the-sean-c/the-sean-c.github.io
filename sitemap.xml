@@ -2,26 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.seancdaly.com/about.html</loc>
-    <lastmod>2024-11-19T04:41:18.300Z</lastmod>
+    <lastmod>2024-12-04T03:08:21.973Z</lastmod>
   </url>
   <url>
-    <loc>https://www.seancdaly.com/posts/fasthtml_tailwind/index.html</loc>
-    <lastmod>2024-11-19T04:41:17.128Z</lastmod>
+    <loc>https://www.seancdaly.com/posts/basis-analysis-synthesis/index.html</loc>
+    <lastmod>2024-12-04T03:08:20.371Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/posts/hidden-markov-model/index.html</loc>
-    <lastmod>2024-11-19T04:41:16.102Z</lastmod>
+    <lastmod>2024-12-04T03:08:19.619Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/posts/one-armed-bandit/index.html</loc>
-    <lastmod>2024-11-19T04:41:14.955Z</lastmod>
+    <lastmod>2024-12-04T03:08:18.469Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/posts/ai-interface/index.html</loc>
-    <lastmod>2024-11-19T04:41:16.462Z</lastmod>
+    <lastmod>2024-12-04T03:08:19.970Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.seancdaly.com/posts/fasthtml_tailwind/index.html</loc>
+    <lastmod>2024-12-04T03:08:20.968Z</lastmod>
   </url>
   <url>
     <loc>https://www.seancdaly.com/index.html</loc>
-    <lastmod>2024-11-19T04:41:18.077Z</lastmod>
+    <lastmod>2024-12-04T03:08:21.754Z</lastmod>
   </url>
 </urlset>
